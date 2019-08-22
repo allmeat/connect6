@@ -1,6 +1,7 @@
 # connect6
 
 ## requirements
++ flask
 + bokeh
 
 ## installation
