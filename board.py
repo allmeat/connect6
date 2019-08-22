@@ -48,11 +48,3 @@ class Board:
                           size=24)
 
         return x, y, color
-
-
-board = Board()
-board.put_stone(5, 5, "b")
-board.put_stone(6, 5, "w")
-board.put_stone(16, 16, "b")
-board.put_stone(10, 16, "w")
-board.render()
