@@ -36,7 +36,7 @@ class Board:
     def render(self):
         show(self.board)
 
-    def put_stone(self, x, y, stone):
+    def put_stone(self, x: str, y: str, stone: str):
         if (stone == "black") | (stone == "b"):
             color = "black"
         elif (stone == "white") | (stone == "w"):
@@ -44,8 +44,8 @@ class Board:
         else:
             raise TypeError("stone color should be [black] or [white]")
 
-        self.board.circle([str(x)],
-                          [str(y)],
+        self.board.circle([x],
+                          [y],
                           fill_color=color,
                           line_color="black",
                           line_width=1,
