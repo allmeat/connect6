@@ -1,11 +1,11 @@
 from random import randint
-from server import Stone
+from board import Stone
 
 
 class Bot:
 
     @staticmethod
-    def random_bot(stone: str):
+    def random_bot(stone: str) -> Stone:
         x = randint(1, 19)
         y = randint(1, 19)
         return Stone(x, y, stone)
