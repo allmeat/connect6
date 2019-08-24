@@ -21,7 +21,6 @@ log = []
 
 @app.route("/")
 def index():
-    global log
     return render_template("board.html")
 
 
