@@ -41,5 +41,13 @@ def logging():
     return "/".join([f"{i + 1},{item.x},{item.y},{item.stone}" for i, item in enumerate(log)])
 
 
+@app.route("/reset")
+def reset():
+    log.clear()
+    board_object.setup()
+    save(board_object.board)
+    return render_template("board.html")
+
+
 if __name__ == "__main__":
     app.run(port=8080)
