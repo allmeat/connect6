@@ -1,10 +1,19 @@
+from dataclasses import dataclass
 from bokeh.plotting import figure, show
+
+
+@dataclass
+class Stone:
+    x: str
+    y: str
+    stone: str
 
 
 class Board:
 
     def __init__(self):
         self.board = figure()
+        self.log = []
         self.setup()
 
     def setup(self):
@@ -32,17 +41,18 @@ class Board:
                 p.circle([x], [y], color="gray", size=10)
 
         self.board = p
+        self.log = []
 
     def render(self):
         show(self.board)
 
-    def put_stone(self, x: str, y: str, stone: str):
-        if (stone == "black") | (stone == "b"):
+    def put_stone(self, x: str, y: str, stone: str) -> Stone:
+        if stone == "b":
             color = "black"
-        elif (stone == "white") | (stone == "w"):
+        elif stone == "w":
             color = "white"
         else:
-            raise TypeError("stone color should be [black] or [white]")
+            raise TypeError("stone color string should be [b] or [w]")
 
         self.board.circle([x],
                           [y],
@@ -51,4 +61,4 @@ class Board:
                           line_width=1,
                           size=24)
 
-        return x, y, color
+        return Stone(x, y, stone)
