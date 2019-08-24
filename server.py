@@ -1,14 +1,15 @@
 import re
-from board import Board, Stone
+import json
 from bokeh.plotting import output_file, save
 from flask import Flask, render_template, request
+from board import Board, Stone
 
 
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
-board_object = Board()
+board = Board()
 output_file("templates/board.html")
-save(board_object.board)
+save(board.figure)
 regex_digit = re.compile(r"\d+")
 regex_stone = re.compile(r"[bw]")
 
@@ -31,22 +32,23 @@ def play():
     elif regex_stone.match(stone) is None:
         return {"code": 400, "message": "illegal input in stone"}, 400
     else:
-        board_object.log.append(Stone(x, y, stone))
-        board_object.put_stone(x, y, stone)
-        save(board_object.board)
+        board.log.append(Stone(x, y, stone))
+        board.put_stone(x, y, stone)
+        save(board.figure)
         return render_template("board.html")
 
 
 @app.route("/history")
 def history():
-    return "/".join([f"{i + 1},{item.x},{item.y},{item.stone}" for i, item in enumerate(board_object.log)])
+    board_log = [f"{item.x},{item.y},{item.stone}" for item in board.log]
+    return json.dumps({"code": 200, "data": board_log})
 
 
 @app.route("/reset")
 def reset():
-    board_object.log.clear()
-    board_object.setup()
-    save(board_object.board)
+    board.log.clear()
+    board.setup()
+    save(board.figure)
     return render_template("board.html")
 
 
