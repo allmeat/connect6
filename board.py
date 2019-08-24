@@ -12,7 +12,7 @@ class Stone:
 class Board:
 
     def __init__(self):
-        self.board = figure()
+        self.figure = figure()
         self.log = []
         self.setup()
 
@@ -40,11 +40,11 @@ class Board:
             for y in ["4", "10", "16"]:
                 p.circle([x], [y], color="gray", size=10)
 
-        self.board = p
+        self.figure = p
         self.log = []
 
     def render(self):
-        show(self.board)
+        show(self.figure)
 
     def put_stone(self, x: str, y: str, stone: str) -> Stone:
         if stone == "b":
@@ -54,11 +54,11 @@ class Board:
         else:
             raise TypeError("stone color string should be [b] or [w]")
 
-        self.board.circle([x],
-                          [y],
-                          fill_color=color,
-                          line_color="black",
-                          line_width=1,
-                          size=24)
+        self.figure.circle([x],
+                           [y],
+                           fill_color=color,
+                           line_color="black",
+                           line_width=1,
+                           size=24)
 
         return Stone(x, y, stone)
