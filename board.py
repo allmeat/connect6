@@ -1,17 +1,18 @@
 from dataclasses import dataclass
-from bokeh.plotting import figure, show
+from bokeh.plotting import figure, output_file, save
 
 
 @dataclass
 class Stone:
     x: str
     y: str
-    stone: str
+    color: str
 
 
 class Board:
 
     def __init__(self):
+        output_file("templates/board.html")
         self.figure = figure()
         self.log = []
         self.setup()
@@ -43,22 +44,20 @@ class Board:
         self.figure = p
         self.log = []
 
-    def render(self):
-        show(self.figure)
+    def save_figure(self):
+        save(self.figure)
 
-    def put_stone(self, x: str, y: str, stone: str) -> Stone:
-        if stone == "b":
-            color = "black"
-        elif stone == "w":
-            color = "white"
+    def put_stone(self, stone: Stone):
+        if stone.color == "b":
+            fill_color = "black"
+        elif stone.color == "w":
+            fill_color = "white"
         else:
             raise TypeError("stone color string should be [b] or [w]")
 
-        self.figure.circle([x],
-                           [y],
-                           fill_color=color,
+        self.figure.circle([stone.x],
+                           [stone.y],
+                           fill_color=fill_color,
                            line_color="black",
                            line_width=1,
                            size=24)
-
-        return Stone(x, y, stone)
