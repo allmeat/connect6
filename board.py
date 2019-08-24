@@ -4,6 +4,10 @@ from bokeh.plotting import figure, show
 class Board:
 
     def __init__(self):
+        self.board = figure()
+        self.setup()
+
+    def setup(self):
         x_tick = [str(x) for x in range(1, 20)]
         y_tick = [str(x) for x in range(19, 0, -1)]
         p = figure(x_range=x_tick,
