@@ -3,7 +3,7 @@ from board import Stone
 
 class Player:
 
-    def __init__(self, color):
+    def __init__(self, color: str):
         self.color = color
 
     def manual_input(self) -> Stone:
