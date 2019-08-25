@@ -4,13 +4,15 @@ from board import Stone
 
 class Bot:
 
-    @staticmethod
-    def random_bot(stone: str) -> Stone:
+    def __init__(self, color):
+        self.color = color
+
+    def random_bot(self) -> Stone:
         x = randint(1, 19)
         y = randint(1, 19)
-        return Stone(x, y, stone)
+        return Stone(str(x), str(y), self.color)
 
 
 if __name__ == "__main__":
-    bot = Bot()
-    print(bot.random_bot("w"))
+    bot = Bot("w")
+    print(bot.random_bot())
