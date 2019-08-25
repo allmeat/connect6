@@ -1,25 +1,30 @@
 from board import Board, Stone
 from referee import Referee
+from player import Player
 from bot import Bot
 
 board = Board()
 referee = Referee()
 
-player_first = True
-bot = Bot("w") if player_first else Bot("b")
+player_first = False
+if player_first:
+    player = Player("b")
+    bot = Bot("w")
+else:
+    player = Player("w")
+    bot = Bot("b")
 
 
-def play(turn: str, color: str):
+def play(order: str, color: str):
     while referee.turn_check(board.log) == color:
-        if turn == "player":
-            x = input("x: ")
-            y = input("y: ")
-            stone = Stone(x, y, color)
+        if order == "player":
+            stone = player.manual_input()
         else:
             stone = bot.random_bot()
+
         if referee.valid_check(stone, board.log):
             board.put_stone(stone)
-            print(f"{turn} stone = {stone.x}, {stone.y}, {color}")
+            print(f"{order} stone: {stone.x},{stone.y},{color}")
         else:
             print("invalid stone input")
 
