@@ -15,4 +15,5 @@ class Bot:
 
 if __name__ == "__main__":
     bot = Bot("w")
-    print(bot.random_bot())
+    print("--random bot")
+    print("\t--white random stone: ", bot.random_bot())
