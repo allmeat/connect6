@@ -9,4 +9,4 @@
 + `pip install -r requirements.txt`
 
 ## author
-+ alex
++ Alex
