@@ -31,7 +31,6 @@ def play():
         return {"code": 400, "message": "illegal input in stone"}, 400
     else:
         # TODO : set referee here
-        board.log.append(Stone(x, y, color))
         board.put_stone(Stone(x, y, color))
         board.save_figure()
         return render_template("board.html")
