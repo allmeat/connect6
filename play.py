@@ -1,4 +1,38 @@
-# 플레이어와 봇에게 번갈아가며 착수를 요청함
-# 착수 요청이 올 때마다 심판 호출
-# 유효하지 않은 착수로 판정될 경우 다시 요청
-# 판정 모두 끝나면 턴 전환
+from board import Board, Stone
+from referee import Referee
+from bot import Bot
+
+board = Board()
+referee = Referee()
+
+player_first = True
+bot = Bot("w") if player_first else Bot("b")
+
+
+def play(turn: str, color: str):
+    while referee.turn_check(board.log) == color:
+        if turn == "player":
+            x = input("x : ")
+            y = input("y : ")
+            stone = Stone(x, y, "b")
+        else:
+            stone = bot.random_bot()
+        if referee.valid_check(stone, board.log):
+            board.log.append(stone)
+            board.put_stone(stone)
+            print(f"{turn} stone = {stone.x}, {stone.y}, {color}")
+            if referee.end_check(board.log):
+                break
+        else:
+            print("invalid stone input")
+
+
+while not referee.end_check(board.log):
+    if player_first:
+        play("player", "b")
+        play("bot", "w")
+    else:
+        play("bot", "b")
+        play("player", "w")
+
+board.render_figure()
