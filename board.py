@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from bokeh.plotting import figure, output_file, save
+from bokeh.plotting import figure, output_file, save, show
 
 
 @dataclass
@@ -12,7 +12,8 @@ class Stone:
 class Board:
 
     def __init__(self):
-        output_file("templates/board.html")
+        self.output_path = "templates/board.html"
+        output_file(self.output_path)
         self.figure = figure()
         self.log = []
         self.setup()
@@ -46,6 +47,9 @@ class Board:
 
     def save_figure(self):
         save(self.figure)
+
+    def render_figure(self):
+        show(self.figure)
 
     def put_stone(self, stone: Stone):
         if stone.color == "b":
