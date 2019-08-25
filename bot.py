@@ -4,7 +4,7 @@ from board import Stone
 
 class Bot:
 
-    def __init__(self, color):
+    def __init__(self, color: str):
         self.color = color
 
     def random_bot(self) -> Stone:
