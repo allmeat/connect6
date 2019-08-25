@@ -1,4 +1,4 @@
-from board import Board, Stone
+from board import Board
 from referee import Referee
 from player import Player
 from bot import Bot
