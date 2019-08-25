@@ -1,8 +1,6 @@
-from typing import List
+from typing import List, DefaultDict
 from board import Stone
-
-# 착수 요청된 돌이 유효한지, 중복된 위치는 아닌지 체크함
-# 유효한 착수일 때, 6목 성사 여부 확인함 (가로, 세로, 대각선)
+from collections import defaultdict
 
 
 class Referee:
@@ -22,24 +20,69 @@ class Referee:
         else:
             return "w"
 
-    @staticmethod
-    def end_check(log: List[Stone]) -> str:
-        log_dict = {}
+    def end_check(self, log: List[Stone]) -> str:
+        log_dict = defaultdict(list)
         for item in log:
-            log_dict[item.color] = [item.x, item.y]
+            log_dict[item.color].append([int(item.x), int(item.y)])
+        black_stones = log_dict["b"]
+        white_stones = log_dict["w"]
 
-        # "keep play"
-        # "black wins"
-        # "white wins"
-        if len(log) >= 4:
-            return "abc"
+        black_wins = self.connection_check(black_stones)
+        white_wins = self.connection_check(white_stones)
+
+        if black_wins:
+            return "black wins"
+        elif white_wins:
+            return "white wins"
         else:
             return "keep play"
+
+    def connection_check(self, positions: List[List[int]]) -> bool:
+        horizontal_dict = defaultdict(list)
+        vertical_dict = defaultdict(list)
+        diagonal_count = []
+        for p in positions:
+            horizontal_dict[p[0]].append(p[1])
+            vertical_dict[p[1]].append(p[0])
+            diagonal_count.append(self.diagonal_connection_check(p, positions))
+
+        horizontal_check = self.cartesian_connection_check(horizontal_dict)
+        vertical_check = self.cartesian_connection_check(vertical_dict)
+        diagonal_check = max(diagonal_count) >= 5
+
+        return horizontal_check | vertical_check | diagonal_check
+
+    @staticmethod
+    def cartesian_connection_check(groups: DefaultDict[int, List]) -> bool:
+        for group_key in groups:
+            group = groups[group_key]
+            if len(group) >= 6:
+                sort_group = sorted(group)
+                diff = [str(sort_group[i + 1] - sort_group[i]) for i in range(len(sort_group) - 1)]
+                diff_string = ",".join(diff)
+                if "1,1,1,1,1" in diff_string:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+    @staticmethod
+    def diagonal_connection_check(current_position: List[int], all_position: List[List[int]]) -> int:
+        # recursive
+        def count_lower_right(cnt: int, current: List[int]) -> int:
+            next_position = [p + 1 for p in current]
+            if next_position in all_position:
+                cnt = count_lower_right(cnt + 1, next_position)
+                return cnt
+            else:
+                return cnt
+        return count_lower_right(0, current_position)
 
 
 if __name__ == "__main__":
     referee = Referee()
-    log = [
+    test_log = [
         Stone("1", "1", "b"),
         Stone("2", "1", "w"),
         Stone("2", "2", "w"),
@@ -51,15 +94,30 @@ if __name__ == "__main__":
         Stone("1", "5", "b"),
         Stone("2", "5", "w"),
         Stone("2", "6", "w"),
+    ]
+    diagonal_test_log = [
+        Stone("1", "2", "b"),
+        Stone("1", "1", "w"),
+        Stone("2", "2", "w"),
+        Stone("1", "3", "b"),
+        Stone("1", "4", "b"),
+        Stone("3", "3", "w"),
+        Stone("4", "4", "w"),
+        Stone("1", "5", "b"),
         Stone("1", "6", "b"),
-        Stone("1", "7", "b"),
+        Stone("5", "5", "w"),
+        Stone("6", "5", "w"),
+        Stone("10", "11", "b"),
+        Stone("11", "11", "b"),
+        Stone("6", "6", "w"),
     ]
     print("--valid_check")
-    print("\t--valid stone: ", referee.valid_check(Stone("10", "10", "b"), log))
-    print("\t--invalid stone:", referee.valid_check(Stone("1", "1", "w"), log))
+    print("\t--valid stone: ", referee.valid_check(Stone("10", "10", "b"), test_log))
+    print("\t--invalid stone:", referee.valid_check(Stone("1", "1", "w"), test_log))
     print("--turn_check")
-    print("\t--black turn: ", referee.turn_check(log[:-1]))
-    print("\t--white turn: ", referee.turn_check(log))
+    print("\t--white turn: ", referee.turn_check(test_log[:-1]))
+    print("\t--black turn: ", referee.turn_check(test_log))
     print("--end_check")
-    print("\t--keep play: ", referee.end_check(log[:-1]))
-    print("\t--black wins: ", referee.end_check(log))
+    print("\t--keep play: ", referee.end_check(test_log[:-1]))
+    print("\t--white wins (horizontal): ", referee.end_check(test_log))
+    print("\t--white wins (diagonal): ", referee.end_check(diagonal_test_log))
