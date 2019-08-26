@@ -3,6 +3,8 @@ from board import Stone
 from collections import defaultdict
 
 
+# TODO : tie case
+# TODO : sparse
 class Referee:
 
     @staticmethod
