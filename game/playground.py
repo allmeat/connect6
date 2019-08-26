@@ -1,7 +1,5 @@
 from game.rules import Judge
-from game.common import Coord
-
-
+from game.random_bot import find_empty_spot
 PLAYER = ['W', 'B']
 
 
@@ -10,19 +8,19 @@ def show_board(coord_in_board, player=0, nth_move=0):
 	print('{} turn.'.format(stone_color))
 	print('- number of move : {}'.format(nth_move))
 	print()
-	print('\t', ' '.join('  {:>2d} |'.format(t+1) for t in range(19)))
-	print('\t', '-'*(len(' '.join('  {:>2d} |'.format(t+1) for t in range(19)))))
+	print('\t', '|'.join('{:>2d}'.format(t+1) for t in range(19)))
+	print('\t', '-'*(len('|'.join('{:>2d}'.format(t+1) for t in range(19)))))
 
 	for y in range(19):
-		print('  {:>2d} |'.format(y+1), end='')  # line no.
+		print(' {:>2d} |'.format(y+1), end='')  # line no.
 		for x in range(19):
-			if coord_in_board.x_axis != 0 and coord_in_board.y_axis != 0:
+			if coord_in_board[x][y] != 0:
 				print(' ' + stone_color, end='')
 			else:
-				print(' *', end='')
-		print(' |')
+				print(' * ', end='')
+		print('|')
 
-	print('     +---------------------------------------+')
+	print('\t', '-'*(len('|'.join('{:>2d}'.format(t+1) for t in range(19)))))
 
 
 def finish_game(won_bot=None):
@@ -42,24 +40,38 @@ def valid_user_input(inp):
 		print("B or W (B=Black W=White)")
 
 
-def main(bots):
-	# to align index with player variable.
-	bot_set = [None] + bots
+def manual_input(coord_info):
+	x_input = input('input x coordinate')
+	y_input = input('input y coordinate')
+	return x_input, y_input
 
-	board = Coord
+
+def get_inputs(coord_info, is_bot=True):
+	if is_bot:
+		return find_empty_spot(coord_info)
+	else:
+		return manual_input(coord_info)
+
+
+def main(human_color):
+
+	if human_color == 'B':
+		bot = 'W'
+	else:
+		bot = 'B'
+
+	board = [[0 for x in range(19)] for y in range(19)]
 	judge = Judge(board)
-
 	nth_move = 1
-	player = 2  # 1=white 2=black. black moves first
+	player = PLAYER.index(human_color)
 	player_moved_count = 1  # at first time, black can only move once.
-
 	while True:
-		draw_board(board, player, nth_move)
+		show_board(board, player, nth_move)
 
 		# input loop.
 		while True:
 			try:
-				x, y = bot_set[player].move(board, nth_move)
+				x, y = get_inputs(board,)
 				able_to_place, msg = judge.can_place(x, y)
 				if not able_to_place:
 					print('{}. Try again in another place.'.format(msg))
@@ -67,7 +79,7 @@ def main(bots):
 				break
 
 			except KeyboardInterrupt:
-				print('\n' + 'Bye...')
+				print('\n' + 'Game Over')
 				finish_game(logger)
 				return
 
@@ -77,13 +89,12 @@ def main(bots):
 				continue
 
 		# place stone
-		board.x_axis = player
-		board.y_axis = player
+		board[x][y] = player
 		judge.update(x, y, player)
 
 		won_player = judge.determine()
 		if won_player is not None:
-			finish_game(logger, bot_set[won_player])
+			finish_game(logger, )
 			return
 
 		player_moved_count += 1
@@ -91,7 +102,7 @@ def main(bots):
 			# Change turn : a player can move 2 times per turn.
 			nth_move += 1
 			player_moved_count = 0
-			player = 2 if player == 1 else 1
+			player = 1 if player == 0 else 0
 
 
 if __name__ == '__main__':
@@ -100,8 +111,5 @@ if __name__ == '__main__':
 		human = input('Select the stone color. Black goes first. (B=Black W=White)')
 
 	human = human.upper()
-	if human.upper() == 'B':
-		bot = 'W'
-	else:
-		bot = 'B'
-	main()
+
+	main(human)

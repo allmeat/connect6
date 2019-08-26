@@ -9,8 +9,3 @@ def repr_direction(dir_func):
 class Point(NamedTuple):
     x: int
     y: int
-
-
-class Coord(NamedTuple):
-    x_axis: [0]*19
-    y_axis: [0]*19
