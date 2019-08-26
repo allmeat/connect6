@@ -1,8 +1,11 @@
+import os
 import re
 import json
 from flask import Flask, render_template, request
 from board import Board, Stone
 
+if not os.path.exists("templates"):
+    os.mkdir("templates")
 
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
