@@ -40,7 +40,7 @@ class Referee:
     def connection_check(self, positions: List[List[int]]) -> bool:
         horizontal_dict = defaultdict(list)
         vertical_dict = defaultdict(list)
-        diagonal_count = []
+        diagonal_count = [0]
         for p in positions:
             horizontal_dict[p[0]].append(p[1])
             vertical_dict[p[1]].append(p[0])
@@ -54,18 +54,21 @@ class Referee:
 
     @staticmethod
     def cartesian_connection_check(groups: DefaultDict[int, List]) -> bool:
-        for group_key in groups:
-            group = groups[group_key]
-            if len(group) >= 6:
-                sort_group = sorted(group)
-                diff = [str(sort_group[i + 1] - sort_group[i]) for i in range(len(sort_group) - 1)]
-                diff_string = ",".join(diff)
-                if "1,1,1,1,1" in diff_string:
-                    return True
+        if len(groups) == 0:
+            return False
+        else:
+            for group_key in groups:
+                group = groups[group_key]
+                if len(group) >= 6:
+                    sort_group = sorted(group)
+                    diff = [str(sort_group[i + 1] - sort_group[i]) for i in range(len(sort_group) - 1)]
+                    diff_string = ",".join(diff)
+                    if "1,1,1,1,1" in diff_string:
+                        return True
+                    else:
+                        return False
                 else:
                     return False
-            else:
-                return False
 
     @staticmethod
     def diagonal_connection_check(current_position: List[int], all_position: List[List[int]]) -> int:
