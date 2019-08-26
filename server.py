@@ -3,6 +3,7 @@ import re
 import json
 from flask import Flask, render_template, request
 from board import Board, Stone
+from referee import Referee
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
@@ -11,6 +12,7 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 board = Board()
 board.save_figure()
+referee = Referee()
 regex_digit = re.compile(r"\d+")
 regex_color = re.compile(r"[bw]")
 
@@ -34,9 +36,16 @@ def play():
         return {"code": 400, "message": "illegal input in stone"}, 400
     else:
         # TODO : set referee here
-        board.put_stone(Stone(x, y, color))
-        board.save_figure()
-        return render_template("board.html")
+        if referee.end_check(board.log) == "keep play":
+            if referee.turn_check(board.log) == color:
+                board.put_stone(Stone(x, y, color))
+                board.save_figure()
+                return render_template("board.html")
+            else:
+                return {"code": 400, "message": "illegal turn"}, 400
+        else:
+            # return render_template("board.html")
+            return {"code": 200, "message": f"{referee.end_check(board.log)}"},
 
 
 @app.route("/history")
