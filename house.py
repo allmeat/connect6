@@ -1,8 +1,12 @@
+import os
 from random import random
 from board import Board
 from referee import Referee
 from player import Player
 from bot import Bot
+
+if not os.path.exists("templates"):
+    os.mkdir("templates")
 
 
 class House:
