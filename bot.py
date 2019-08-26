@@ -1,3 +1,4 @@
+from typing import List
 from random import randint
 from board import Stone
 
@@ -11,6 +12,9 @@ class Bot:
         x = randint(1, 19)
         y = randint(1, 19)
         return Stone(str(x), str(y), self.color)
+
+    def linear_bot(self, log: List[Stone]) -> Stone:
+        return Stone(str(10), str(10), self.color)
 
 
 if __name__ == "__main__":
