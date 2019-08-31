@@ -25,6 +25,7 @@ class Board:
                    y_range=y_tick,
                    x_axis_location="above",
                    tools="save")
+        p.title.text = "on playing"
         p.plot_width = 800
         p.plot_height = 800
         p.outline_line_color = None
@@ -66,6 +67,9 @@ class Board:
                            line_color="black",
                            line_width=1,
                            size=24)
+
+    def declare_winner(self, color: str):
+        self.figure.title.text = f"winner: {color}"
 
 
 if __name__ == "__main__":
