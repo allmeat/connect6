@@ -68,9 +68,17 @@ class Board:
                            line_width=1,
                            size=24)
 
-    def declare_winner(self, color: str):
+    def print_winner(self, color: str):
         self.figure.title.text = f"winner: {color}"
 
+    def print_illegal_turn(self):
+        self.figure.title.text = "illegal turn"
+
+    def print_illegal_stone(self):
+        self.figure.title.text = "illegal stone"
+
+    def print_on_playing(self):
+        self.figure.title.text = "on playing"
 
 if __name__ == "__main__":
     board = Board()
