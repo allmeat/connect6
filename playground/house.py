@@ -24,7 +24,7 @@ class House:
             self.bot = Bot("b")
 
     def play(self):
-        while self.referee.end_check(self.board.log) == "keep play":
+        while True:
             turn = self.referee.turn_check(self.board.log)
             if self.player_first == (turn == "b"):
                 order = "player"
