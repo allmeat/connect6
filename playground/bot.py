@@ -1,6 +1,6 @@
 from typing import List
 from random import randint
-from board import Stone
+from playground.board import Stone
 
 
 class Bot:

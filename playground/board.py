@@ -20,7 +20,12 @@ class BoardConfig:
 
 class Board:
 
-    def __init__(self, m: int, n: int, k: int, p: int, q: int):
+    def __init__(self,
+                 m: int = 19,
+                 n: int = 19,
+                 k: int = 6,
+                 p: int = 2,
+                 q: int = 1):
         self.config = BoardConfig(m, n, k, p, q)
         self.output_path = "templates/board.html"
         output_file(self.output_path)
@@ -29,8 +34,8 @@ class Board:
         self.setup()
 
     def setup(self):
-        x_tick = [str(x) for x in range(1, 20)]
-        y_tick = [str(x) for x in range(19, 0, -1)]
+        x_tick = [str(x) for x in range(1, self.config.row + 1)]
+        y_tick = [str(x) for x in range(self.config.column, 0, -1)]
         p = figure(x_range=x_tick,
                    y_range=y_tick,
                    x_axis_location="above",
@@ -46,12 +51,14 @@ class Board:
         p.axis.major_label_standoff = 0
 
         for x in x_tick:
-            p.line(["1", "19"], [x, x], line_width=1, color="gray")
-            p.line([x, x], ["1", "19"], line_width=1, color="gray")
+            p.line(["1", str(self.config.row)], [x, x], line_width=1, color="gray")
+        for y in y_tick:
+            p.line([y, y], ["1", str(self.config.column)], line_width=1, color="gray")
 
-        for x in ["4", "10", "16"]:
-            for y in ["4", "10", "16"]:
-                p.circle([x], [y], color="gray", size=10)
+        if self.config.row == 19 & self.config.column == 19:
+            for x in ["4", "10", "16"]:
+                for y in ["4", "10", "16"]:
+                    p.circle([x], [y], color="gray", size=10)
 
         self.figure = p
         self.log = []
@@ -89,6 +96,7 @@ class Board:
 
     def print_on_playing(self):
         self.figure.title.text = "on playing"
+
 
 if __name__ == "__main__":
     board = Board()
