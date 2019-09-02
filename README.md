@@ -6,7 +6,15 @@
 + flask == 1.1.1
 
 ## installation
-+ `pip install -r requirements.txt`
++ `pip install -r requirements.txt
+
+## how to run connect6 server
+'''
+cd playground
+python server.py
+'''
 
 ## author
 + Alex
++ Jungwon
++ Tei
