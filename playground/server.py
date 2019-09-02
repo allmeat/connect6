@@ -35,17 +35,23 @@ def play():
     elif regex_color.match(color) is None:
         return {"code": 400, "message": "illegal input in stone"}, 400
     else:
-        # TODO : set referee here
-        if referee.end_check(board.log) == "keep play":
-            if referee.turn_check(board.log) == color:
-                board.put_stone(Stone(x, y, color))
+        if referee.turn_check(board.log) == color:
+            stone = Stone(x, y, color)
+            if referee.valid_check(stone, board.log):
+                board.print_on_playing()
+                board.put_stone(stone)
+                if referee.end_check(board.log) != "keep play":
+                    board.print_winner(color)
                 board.save_figure()
                 return render_template("board.html")
             else:
-                return {"code": 400, "message": "illegal turn"}, 400
+                board.print_illegal_stone()
+                board.save_figure()
+                return render_template("board.html")
         else:
-            # return render_template("board.html")
-            return {"code": 200, "message": f"{referee.end_check(board.log)}"},
+            board.print_illegal_turn()
+            board.save_figure()
+            return render_template("board.html")
 
 
 @app.route("/history")

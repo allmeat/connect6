@@ -25,6 +25,7 @@ class Board:
                    y_range=y_tick,
                    x_axis_location="above",
                    tools="save")
+        p.title.text = "on playing"
         p.plot_width = 800
         p.plot_height = 800
         p.outline_line_color = None
@@ -67,6 +68,17 @@ class Board:
                            line_width=1,
                            size=24)
 
+    def print_winner(self, color: str):
+        self.figure.title.text = f"winner: {color}"
+
+    def print_illegal_turn(self):
+        self.figure.title.text = "illegal turn"
+
+    def print_illegal_stone(self):
+        self.figure.title.text = "illegal stone"
+
+    def print_on_playing(self):
+        self.figure.title.text = "on playing"
 
 if __name__ == "__main__":
     board = Board()
