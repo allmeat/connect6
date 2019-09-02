@@ -1,9 +1,8 @@
 from typing import List, DefaultDict
-from board import Stone
 from collections import defaultdict
+from playground.board import Board, Stone
 
 
-# TODO : tie case
 # TODO : sparse
 class Referee:
 
@@ -84,6 +83,15 @@ class Referee:
                 return cnt
         return count_lower_right(0, current_position)
 
+    @staticmethod
+    def tie_check(log: List[Stone], board: Board) -> bool:
+        max_turn = board.config.column * board.config.row
+        current_turn = len(log)
+        if max_turn - current_turn == 1:
+            return True
+        else:
+            return False
+
 
 if __name__ == "__main__":
     referee = Referee()
@@ -116,6 +124,17 @@ if __name__ == "__main__":
         Stone("11", "11", "b"),
         Stone("6", "6", "w"),
     ]
+
+    test_board = Board(2, 2, 2, 1, 1)
+    tie_check_log = [
+        Stone("1", "1", "b"),
+        Stone("1", "2", "b"),
+        Stone("2", "1", "w")
+    ]
+
+    print("--tie_check")
+    print("\t--tie: ", referee.tie_check(tie_check_log, test_board))
+    print("\t--not tie: ", referee.tie_check(tie_check_log[:1], test_board))
     print("--valid_check")
     print("\t--valid stone: ", referee.valid_check(Stone("10", "10", "b"), test_log))
     print("\t--invalid stone:", referee.valid_check(Stone("1", "1", "w"), test_log))
