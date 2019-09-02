@@ -9,9 +9,19 @@ class Stone:
     color: str
 
 
+@dataclass
+class BoardConfig:
+    row: int
+    column: int
+    connect: int
+    each_move: int
+    first_move: int
+
+
 class Board:
 
-    def __init__(self):
+    def __init__(self, m: int, n: int, k: int, p: int, q: int):
+        self.config = BoardConfig(m, n, k, p, q)
         self.output_path = "templates/board.html"
         output_file(self.output_path)
         self.figure = figure()
