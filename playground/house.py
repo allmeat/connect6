@@ -1,9 +1,9 @@
 import os
 from random import random
-from playground.board import Board
-from playground.referee import Referee
-from playground.player import Player
-from playground.bot import Bot
+from board import Board
+from referee import Referee
+from player import Player
+from bot import Bot
 
 if not os.path.exists("templates"):
 	os.mkdir("templates")

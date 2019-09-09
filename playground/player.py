@@ -1,4 +1,4 @@
-from playground.board import Stone
+from board import Stone
 
 
 class Player:
