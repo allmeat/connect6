@@ -4,8 +4,8 @@ from bokeh.plotting import figure, output_file, save, show
 
 @dataclass
 class Stone:
-    x: int
-    y: int
+    x: str
+    y: str
     color: str
 
 
@@ -78,8 +78,8 @@ class Board:
             raise TypeError("stone color string should be [b] or [w]")
 
         self.log.append(stone)
-        self.figure.circle([str(stone.x)],
-                           [str(stone.y)],
+        self.figure.circle([stone.x],
+                           [stone.y],
                            fill_color=fill_color,
                            line_color="black",
                            line_width=1,
