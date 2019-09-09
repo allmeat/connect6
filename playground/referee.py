@@ -1,6 +1,6 @@
 from typing import List, DefaultDict
 from collections import defaultdict
-from playground.board import Board, Stone
+from board import Board, Stone
 
 
 # TODO : sparse
