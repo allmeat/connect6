@@ -2,8 +2,8 @@ import os
 import re
 import json
 from flask import Flask, render_template, request
-from playground.board import Board, Stone
-from playground.referee import Referee
+from board import Board, Stone
+from referee import Referee
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
