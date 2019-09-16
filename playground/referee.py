@@ -97,13 +97,13 @@ class Referee:
 
     @staticmethod
     def check_diagonal_by_direction(all_positions: List[Stone], current_stone: Stone,
-                                    directions: List[Callable[[(int, int)], (int, int)]]) -> bool:
+                                    directions) -> bool:
         direction_list = [Stone(current_stone.x, current_stone.y, current_stone.color)]
         for direction in directions:
-            current_x, current_y = current_stone.x, current_stone.y
+            current_x, current_y = int(current_stone.x), int(current_stone.y)
             for i in range(5):
                 new_x, new_y = direction(current_x, current_y)
-                direction_list.append(Stone(new_x, new_y, current_stone.color))
+                direction_list.append(Stone(str(new_x), str(new_y), current_stone.color))
                 current_x, current_y = new_x, new_y
         in_position = []
         for item in sorted(direction_list, key=lambda s: s.x):
