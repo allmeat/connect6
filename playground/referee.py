@@ -149,6 +149,23 @@ if __name__ == "__main__":
         Stone("2", "9", "w"),
         Stone("2", "6", "w"),
     ]
+    horizontal_test_log = [
+        Stone("1", "1", "b"),
+        Stone("1", "2", "w"),
+        Stone("2", "2", "w"),
+        Stone("2", "1", "b"),
+        Stone("3", "1", "b"),
+        Stone("3", "2", "w"),
+        Stone("4", "2", "w"),
+        Stone("4", "1", "b"),
+        Stone("5", "1", "b"),
+        Stone("5", "2", "w"),
+        Stone("8", "2", "w"),
+        Stone("10", "1", "b"),
+        Stone("11", "1", "b"),
+        Stone("9", "2", "w"),
+        Stone("6", "2", "w"),
+    ]
     diagonal_test_log = [
         Stone("1", "2", "b"),
         Stone("1", "1", "w"),
@@ -189,4 +206,5 @@ if __name__ == "__main__":
     print("--end_check")
     print("\t--keep play: ", referee.end_check(test_log[:-1]))
     print("\t--white wins (vertical): ", referee.end_check(test_log))
+    print("\t--white wins (horizontal): ", referee.end_check(horizontal_test_log))
     print("\t--white wins (diagonal): ", referee.end_check(diagonal_test_log))
