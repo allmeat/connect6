@@ -1,8 +1,20 @@
 from typing import List
 from board import Board, Stone
+from typing import Callable
 
 
 class Referee:
+    def __init__(self):
+        # direction: /
+        self.direction_positive = [
+            lambda x, y: (x + 1, y + 1),
+            lambda x, y: (x - 1, y - 1),
+        ]
+        # direction: \
+        self.direction_negative = [
+            lambda x, y: (x + 1, y - 1),
+            lambda x, y: (x - 1, y + 1),
+        ]
 
     @staticmethod
     def valid_check(new_stone: Stone, log: List[Stone]) -> bool:
@@ -21,10 +33,10 @@ class Referee:
 
     def end_check(self, current_stone: Stone, previous_log: List[Stone]) -> str:
         is_win = self.connection_check(current_stone, previous_log)
-        english = {"b": "black", "w": "white"}
+        color_full_name = {"b": "black", "w": "white"}
 
         if is_win:
-            return f"{english[current_stone.color]} wins"
+            return f"{color_full_name[current_stone.color]} wins"
         else:
             return "keep play"
 
@@ -32,8 +44,8 @@ class Referee:
     def filter_log(current_stone: Stone, previous_log: List[Stone], radius=6):
         filtered_history = []
         for item in previous_log:
-            in_x = item.x in range(int(current_stone.x) - (radius-1), int(current_stone.x) + radius)
-            in_y = item.y in range(int(current_stone.y) - (radius-1), int(current_stone.y) + radius)
+            in_x = item.x in range(int(current_stone.x) - (radius - 1), int(current_stone.x) + radius)
+            in_y = item.y in range(int(current_stone.y) - (radius - 1), int(current_stone.y) + radius)
             if in_x and in_y and item.color == current_stone.color:
                 filtered_history.append(item)
         return filtered_history
@@ -47,15 +59,15 @@ class Referee:
         return horizontal_check | vertical_check | diagonal_check
 
     @staticmethod
-    def is_connected(numbers: List[int]) -> bool:
-        last = sorted(numbers)[0]
+    def is_connected(stone_history: List[int]) -> bool:
+        preceding_stone = sorted(stone_history)[0]
         connect = 0
-        for i in sorted(numbers):
-            if i - last == 1:
+        for following_stone in sorted(stone_history):
+            if following_stone - preceding_stone == 1:
                 connect += 1
             else:
                 connect = 0
-            last = i
+            preceding_stone = following_stone
         if connect >= 5:
             return True
         else:
@@ -76,32 +88,25 @@ class Referee:
         return self.is_connected(y_coords)
 
     def diagonal(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
-        # direction: /
-        direction_positive = [
-            lambda x, y: (x + 1, y + 1),
-            lambda x, y: (x - 1, y - 1),
-        ]
-        # direction: \
-        direction_negative = [
-            lambda x, y: (x + 1, y - 1),
-            lambda x, y: (x - 1, y + 1),
-        ]
-        is_positive_diagonal_connected = self.check_diagonal_by_direction(stone_history, current_stone, direction_positive)
-        is_negative_diagonal_connected = self.check_diagonal_by_direction(stone_history, current_stone, direction_negative)
+        is_positive_diagonal_connected = self.check_diagonal_by_direction(stone_history, current_stone,
+                                                                          self.direction_positive)
+        is_negative_diagonal_connected = self.check_diagonal_by_direction(stone_history, current_stone,
+                                                                          self.direction_negative)
 
         return is_positive_diagonal_connected | is_negative_diagonal_connected
 
     @staticmethod
-    def check_diagonal_by_direction(all_positions, current_stone, direction) -> bool:
-        dir_list = [Stone(current_stone.x, current_stone.y, current_stone.color)]
-        for dir_func in direction:
+    def check_diagonal_by_direction(all_positions: List[Stone], current_stone: Stone,
+                                    directions: List[Callable[[(int, int)], (int, int)]]) -> bool:
+        direction_list = [Stone(current_stone.x, current_stone.y, current_stone.color)]
+        for direction in directions:
             current_x, current_y = current_stone.x, current_stone.y
             for i in range(5):
-                new_x, new_y = dir_func(current_x, current_y)
-                dir_list.append(Stone(new_x, new_y, current_stone.color))
+                new_x, new_y = direction(current_x, current_y)
+                direction_list.append(Stone(new_x, new_y, current_stone.color))
                 current_x, current_y = new_x, new_y
         in_position = []
-        for item in sorted(dir_list, key=lambda s: s.x):
+        for item in sorted(direction_list, key=lambda s: s.x):
             if item in all_positions:
                 in_position.append("1")
             else:
