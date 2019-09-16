@@ -1,18 +1,27 @@
-from typing import List, DefaultDict
-from collections import defaultdict
+from typing import List
 from board import Board, Stone
 
 
-# TODO : sparse
 class Referee:
+    def __init__(self):
+        # direction: /
+        self.direction_positive = [
+            lambda x, y: (x + 1, y + 1),
+            lambda x, y: (x - 1, y - 1),
+        ]
+        # direction: \
+        self.direction_negative = [
+            lambda x, y: (x + 1, y - 1),
+            lambda x, y: (x - 1, y + 1),
+        ]
 
     @staticmethod
     def valid_check(new_stone: Stone, log: List[Stone]) -> bool:
-        x_valid_range = (int(new_stone.x) > 0) & (int(new_stone.x) < 20)
-        y_valid_range = (int(new_stone.y) > 0) & (int(new_stone.y) < 20)
-        coordinate = [[stone.x, stone.y] for stone in log]
-        empty_seat = [new_stone.x, new_stone.y] not in coordinate
-        return x_valid_range & y_valid_range & empty_seat
+        x_valid_range = (int(new_stone.x) > 0) and (int(new_stone.x) < 20)
+        y_valid_range = (int(new_stone.y) > 0) and (int(new_stone.y) < 20)
+        positions = [[stone.x, stone.y] for stone in log]
+        empty_position = [new_stone.x, new_stone.y] not in positions
+        return x_valid_range and y_valid_range and empty_position
 
     @staticmethod
     def turn_check(log: List[Stone]) -> str:
@@ -22,66 +31,94 @@ class Referee:
             return "w"
 
     def end_check(self, log: List[Stone]) -> str:
-        log_dict = defaultdict(list)
-        for item in log:
-            log_dict[item.color].append([int(item.x), int(item.y)])
-        black_stones = log_dict["b"]
-        white_stones = log_dict["w"]
+        current_stone = log[-1]
+        is_win = self.connection_check(current_stone, log)
+        color_fullname = {"b": "black", "w": "white"}
 
-        black_wins = self.connection_check(black_stones)
-        white_wins = self.connection_check(white_stones)
-
-        if black_wins:
-            return "black wins"
-        elif white_wins:
-            return "white wins"
+        if is_win:
+            return f"{color_fullname[current_stone.color]} wins"
         else:
             return "keep play"
 
-    def connection_check(self, positions: List[List[int]]) -> bool:
-        horizontal_dict = defaultdict(list)
-        vertical_dict = defaultdict(list)
-        diagonal_count = [0]
-        for p in positions:
-            horizontal_dict[p[0]].append(p[1])
-            vertical_dict[p[1]].append(p[0])
-            diagonal_count.append(self.diagonal_connection_check(p, positions))
+    @staticmethod
+    def filter_log(log: List[Stone], radius=6):
+        current_stone = log[-1]
+        filtered_history = []
+        for item in log:
+            in_x = int(item.x) in range(int(current_stone.x) - (radius - 1), int(current_stone.x) + radius)
+            in_y = int(item.y) in range(int(current_stone.y) - (radius - 1), int(current_stone.y) + radius)
+            if in_x and in_y and item.color == current_stone.color:
+                filtered_history.append(item)
+        return filtered_history
 
-        horizontal_check = self.cartesian_connection_check(horizontal_dict)
-        vertical_check = self.cartesian_connection_check(vertical_dict)
-        diagonal_check = max(diagonal_count) >= 5
-
-        return horizontal_check | vertical_check | diagonal_check
+    def connection_check(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
+        smaller_board = self.filter_log(stone_history)
+        horizontal_check = self.horizontal(current_stone, smaller_board)
+        vertical_check = self.vertical(current_stone, smaller_board)
+        diagonal_check = self.diagonal(current_stone, stone_history)
+        return horizontal_check or vertical_check or diagonal_check
 
     @staticmethod
-    def cartesian_connection_check(groups: DefaultDict[int, List]) -> bool:
-        if len(groups) == 0:
-            return False
-        else:
-            for group_key in groups:
-                group = groups[group_key]
-                if len(group) >= 6:
-                    sort_group = sorted(group)
-                    diff = [str(sort_group[i + 1] - sort_group[i]) for i in range(len(sort_group) - 1)]
-                    diff_string = ",".join(diff)
-                    if "1,1,1,1,1" in diff_string:
-                        return True
-                    else:
-                        return False
-                else:
-                    return False
-
-    @staticmethod
-    def diagonal_connection_check(current_position: List[int], all_position: List[List[int]]) -> int:
-        # recursive
-        def count_lower_right(cnt: int, current: List[int]) -> int:
-            next_position = [p + 1 for p in current]
-            if next_position in all_position:
-                cnt = count_lower_right(cnt + 1, next_position)
-                return cnt
+    def is_connected(stone_positions: List[int]) -> bool:
+        connection = False
+        i = 0
+        connect = 0
+        sort_positions = sorted(stone_positions)
+        while i <= len(sort_positions) - 2:
+            if sort_positions[i + 1] - sort_positions[i] == 1:
+                connect += 1
             else:
-                return cnt
-        return count_lower_right(0, current_position)
+                connect = 0
+            if connect >= 5:
+                connection = True
+                break
+            i += 1
+        return connection
+
+    def horizontal(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
+        x_positions = []
+        for stone in stone_history:
+            if stone.y == current_stone.y:
+                x_positions.append(int(stone.x))
+        return self.is_connected(x_positions)
+
+    def vertical(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
+        y_positions = []
+        for stone in stone_history:
+            if stone.x == current_stone.x:
+                y_positions.append(int(stone.y))
+        return self.is_connected(y_positions)
+
+    def diagonal(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
+        is_positive_diagonal_connected = self.check_diagonal_by_direction(stone_history,
+                                                                          current_stone,
+                                                                          self.direction_positive)
+        is_negative_diagonal_connected = self.check_diagonal_by_direction(stone_history,
+                                                                          current_stone,
+                                                                          self.direction_negative)
+        return is_positive_diagonal_connected or is_negative_diagonal_connected
+
+    @staticmethod
+    def check_diagonal_by_direction(all_positions: List[Stone],
+                                    current_stone: Stone,
+                                    directions
+                                    ) -> bool:
+        direction_list = [Stone(current_stone.x, current_stone.y, current_stone.color)]
+        for direction in directions:
+            current_x, current_y = int(current_stone.x), int(current_stone.y)
+            for i in range(5):
+                new_x, new_y = direction(current_x, current_y)
+                direction_list.append(Stone(str(new_x), str(new_y), current_stone.color))
+                current_x, current_y = new_x, new_y
+        in_position = []
+        for item in sorted(direction_list, key=lambda s: int(s.x)):
+            if item in all_positions:
+                in_position.append("1")
+            else:
+                in_position.append("0")
+
+        in_position_concat = "".join(in_position)
+        return "111111" in in_position_concat
 
     @staticmethod
     def tie_check(log: List[Stone], board: Board) -> bool:
@@ -106,7 +143,27 @@ if __name__ == "__main__":
         Stone("1", "4", "b"),
         Stone("1", "5", "b"),
         Stone("2", "5", "w"),
+        Stone("2", "8", "w"),
+        Stone("1", "10", "b"),
+        Stone("1", "11", "b"),
+        Stone("2", "9", "w"),
         Stone("2", "6", "w"),
+    ]
+    horizontal_test_log = [
+        Stone("1", "1", "b"),
+        Stone("1", "2", "w"),
+        Stone("2", "2", "w"),
+        Stone("2", "1", "b"),
+        Stone("3", "1", "b"),
+        Stone("3", "2", "w"),
+        Stone("4", "2", "w"),
+        Stone("4", "1", "b"),
+        Stone("5", "1", "b"),
+        Stone("5", "2", "w"),
+        Stone("15", "2", "w"),
+        Stone("5", "4", "b"),
+        Stone("7", "3", "b"),
+        Stone("6", "2", "w"),
     ]
     diagonal_test_log = [
         Stone("1", "2", "b"),
@@ -122,6 +179,10 @@ if __name__ == "__main__":
         Stone("6", "5", "w"),
         Stone("10", "11", "b"),
         Stone("11", "11", "b"),
+        Stone("12", "12", "w"),
+        Stone("13", "13", "w"),
+        Stone("14", "14", "b"),
+        Stone("15", "15", "b"),
         Stone("6", "6", "w"),
     ]
 
@@ -143,5 +204,6 @@ if __name__ == "__main__":
     print("\t--black turn: ", referee.turn_check(test_log))
     print("--end_check")
     print("\t--keep play: ", referee.end_check(test_log[:-1]))
-    print("\t--white wins (horizontal): ", referee.end_check(test_log))
+    print("\t--white wins (vertical): ", referee.end_check(test_log))
+    print("\t--white wins (horizontal): ", referee.end_check(horizontal_test_log))
     print("\t--white wins (diagonal): ", referee.end_check(diagonal_test_log))
