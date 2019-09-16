@@ -118,6 +118,7 @@ class Referee:
                 in_position.append("0")
 
         in_position_concat = "".join(in_position)
+
         return "111111" in in_position_concat
 
     @staticmethod
@@ -143,6 +144,10 @@ if __name__ == "__main__":
         Stone("1", "4", "b"),
         Stone("1", "5", "b"),
         Stone("2", "5", "w"),
+        Stone("2", "8", "w"),
+        Stone("1", "10", "b"),
+        Stone("1", "11", "b"),
+        Stone("2", "9", "w"),
         Stone("2", "6", "w"),
     ]
     diagonal_test_log = [
@@ -159,6 +164,10 @@ if __name__ == "__main__":
         Stone("6", "5", "w"),
         Stone("10", "11", "b"),
         Stone("11", "11", "b"),
+        Stone("12", "12", "w"),
+        Stone("13", "13", "w"),
+        Stone("14", "14", "b"),
+        Stone("15", "15", "b"),
         Stone("6", "6", "w"),
     ]
 
@@ -180,5 +189,5 @@ if __name__ == "__main__":
     print("\t--black turn: ", referee.turn_check(test_log))
     print("--end_check")
     print("\t--keep play: ", referee.end_check(test_log[:-1]))
-    print("\t--white wins (horizontal): ", referee.end_check(test_log))
+    print("\t--white wins (vertical): ", referee.end_check(test_log))
     print("\t--white wins (diagonal): ", referee.end_check(diagonal_test_log))
