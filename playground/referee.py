@@ -31,7 +31,8 @@ class Referee:
         else:
             return "w"
 
-    def end_check(self, current_stone: Stone, previous_log: List[Stone]) -> str:
+    def end_check(self, previous_log: List[Stone]) -> str:
+        current_stone = previous_log[-1]
         is_win = self.connection_check(current_stone, previous_log)
         color_full_name = {"b": "black", "w": "white"}
 
@@ -41,17 +42,18 @@ class Referee:
             return "keep play"
 
     @staticmethod
-    def filter_log(current_stone: Stone, previous_log: List[Stone], radius=6):
+    def filter_log(previous_log: List[Stone], radius=6):
+        current_stone = previous_log[-1]
         filtered_history = []
         for item in previous_log:
-            in_x = item.x in range(int(current_stone.x) - (radius - 1), int(current_stone.x) + radius)
-            in_y = item.y in range(int(current_stone.y) - (radius - 1), int(current_stone.y) + radius)
+            in_x = int(item.x) in range(int(current_stone.x) - (radius - 1), int(current_stone.x) + radius)
+            in_y = int(item.y) in range(int(current_stone.y) - (radius - 1), int(current_stone.y) + radius)
             if in_x and in_y and item.color == current_stone.color:
                 filtered_history.append(item)
         return filtered_history
 
     def connection_check(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
-        smaller_board = self.filter_log(current_stone, stone_history)
+        smaller_board = self.filter_log(stone_history)
         horizontal_check = self.horizontal(current_stone, smaller_board)
         vertical_check = self.vertical(current_stone, smaller_board)
         diagonal_check = self.diagonal(current_stone, stone_history)
@@ -174,6 +176,6 @@ if __name__ == "__main__":
     print("\t--white turn: ", referee.turn_check(test_log[:-1]))
     print("\t--black turn: ", referee.turn_check(test_log))
     print("--end_check")
-    print("\t--keep play: ", referee.end_check(test_log[-1], test_log[:-1]))
-    print("\t--white wins (horizontal): ", referee.end_check(test_log[-1], test_log))
-    print("\t--white wins (diagonal): ", referee.end_check(test_log[-1], diagonal_test_log))
+    print("\t--keep play: ", referee.end_check(test_log))
+    print("\t--white wins (horizontal): ", referee.end_check(test_log))
+    print("\t--white wins (diagonal): ", referee.end_check(diagonal_test_log))
