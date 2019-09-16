@@ -1,6 +1,5 @@
 from typing import List
 from board import Board, Stone
-from typing import Callable
 
 
 class Referee:
@@ -18,11 +17,11 @@ class Referee:
 
     @staticmethod
     def valid_check(new_stone: Stone, log: List[Stone]) -> bool:
-        x_valid_range = (int(new_stone.x) > 0) & (int(new_stone.x) < 20)
-        y_valid_range = (int(new_stone.y) > 0) & (int(new_stone.y) < 20)
-        coordinate = [[stone.x, stone.y] for stone in log]
-        empty_seat = [new_stone.x, new_stone.y] not in coordinate
-        return x_valid_range & y_valid_range & empty_seat
+        x_valid_range = (int(new_stone.x) > 0) and (int(new_stone.x) < 20)
+        y_valid_range = (int(new_stone.y) > 0) and (int(new_stone.y) < 20)
+        positions = [[stone.x, stone.y] for stone in log]
+        empty_position = [new_stone.x, new_stone.y] not in positions
+        return x_valid_range and y_valid_range and empty_position
 
     @staticmethod
     def turn_check(log: List[Stone]) -> str:
@@ -31,21 +30,21 @@ class Referee:
         else:
             return "w"
 
-    def end_check(self, previous_log: List[Stone]) -> str:
-        current_stone = previous_log[-1]
-        is_win = self.connection_check(current_stone, previous_log)
-        color_full_name = {"b": "black", "w": "white"}
+    def end_check(self, log: List[Stone]) -> str:
+        current_stone = log[-1]
+        is_win = self.connection_check(current_stone, log)
+        color_fullname = {"b": "black", "w": "white"}
 
         if is_win:
-            return f"{color_full_name[current_stone.color]} wins"
+            return f"{color_fullname[current_stone.color]} wins"
         else:
             return "keep play"
 
     @staticmethod
-    def filter_log(previous_log: List[Stone], radius=6):
-        current_stone = previous_log[-1]
+    def filter_log(log: List[Stone], radius=6):
+        current_stone = log[-1]
         filtered_history = []
-        for item in previous_log:
+        for item in log:
             in_x = int(item.x) in range(int(current_stone.x) - (radius - 1), int(current_stone.x) + radius)
             in_y = int(item.y) in range(int(current_stone.y) - (radius - 1), int(current_stone.y) + radius)
             if in_x and in_y and item.color == current_stone.color:
@@ -57,49 +56,53 @@ class Referee:
         horizontal_check = self.horizontal(current_stone, smaller_board)
         vertical_check = self.vertical(current_stone, smaller_board)
         diagonal_check = self.diagonal(current_stone, stone_history)
-
-        return horizontal_check | vertical_check | diagonal_check
+        return horizontal_check or vertical_check or diagonal_check
 
     @staticmethod
-    def is_connected(stone_history: List[int]) -> bool:
-        preceding_stone = sorted(stone_history)[0]
+    def is_connected(stone_positions: List[int]) -> bool:
+        connection = False
+        i = 0
         connect = 0
-        for following_stone in sorted(stone_history):
-            if following_stone - preceding_stone == 1:
+        sort_positions = sorted(stone_positions)
+        while i <= len(sort_positions) - 2:
+            if sort_positions[i + 1] - sort_positions[i] == 1:
                 connect += 1
             else:
                 connect = 0
-            preceding_stone = following_stone
-        if connect >= 5:
-            return True
-        else:
-            return False
+            if connect >= 5:
+                connection = True
+                break
+            i += 1
+        return connection
 
     def horizontal(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
-        x_coords = []
+        x_positions = []
         for stone in stone_history:
             if stone.y == current_stone.y:
-                x_coords.append(int(stone.x))
-        return self.is_connected(x_coords)
+                x_positions.append(int(stone.x))
+        return self.is_connected(x_positions)
 
     def vertical(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
-        y_coords = []
+        y_positions = []
         for stone in stone_history:
             if stone.x == current_stone.x:
-                y_coords.append(int(stone.y))
-        return self.is_connected(y_coords)
+                y_positions.append(int(stone.y))
+        return self.is_connected(y_positions)
 
     def diagonal(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
-        is_positive_diagonal_connected = self.check_diagonal_by_direction(stone_history, current_stone,
+        is_positive_diagonal_connected = self.check_diagonal_by_direction(stone_history,
+                                                                          current_stone,
                                                                           self.direction_positive)
-        is_negative_diagonal_connected = self.check_diagonal_by_direction(stone_history, current_stone,
+        is_negative_diagonal_connected = self.check_diagonal_by_direction(stone_history,
+                                                                          current_stone,
                                                                           self.direction_negative)
-
-        return is_positive_diagonal_connected | is_negative_diagonal_connected
+        return is_positive_diagonal_connected or is_negative_diagonal_connected
 
     @staticmethod
-    def check_diagonal_by_direction(all_positions: List[Stone], current_stone: Stone,
-                                    directions) -> bool:
+    def check_diagonal_by_direction(all_positions: List[Stone],
+                                    current_stone: Stone,
+                                    directions
+                                    ) -> bool:
         direction_list = [Stone(current_stone.x, current_stone.y, current_stone.color)]
         for direction in directions:
             current_x, current_y = int(current_stone.x), int(current_stone.y)
@@ -176,6 +179,6 @@ if __name__ == "__main__":
     print("\t--white turn: ", referee.turn_check(test_log[:-1]))
     print("\t--black turn: ", referee.turn_check(test_log))
     print("--end_check")
-    print("\t--keep play: ", referee.end_check(test_log))
+    print("\t--keep play: ", referee.end_check(test_log[:-1]))
     print("\t--white wins (horizontal): ", referee.end_check(test_log))
     print("\t--white wins (diagonal): ", referee.end_check(diagonal_test_log))
