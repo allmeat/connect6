@@ -24,16 +24,16 @@ class Referee:
         english = {"b": "black", "w": "white"}
 
         if is_win:
-            return "%s wins" % english[current_stone.color]
+            return f"{english[current_stone.color]} wins"
         else:
             return "keep play"
 
     @staticmethod
-    def filter_log(current_stone: Stone, previous_log: List[Stone]):
+    def filter_log(current_stone: Stone, previous_log: List[Stone], radius=6):
         filtered_history = []
         for item in previous_log:
-            in_x = item.x in range(int(current_stone.x) - 5, int(current_stone.x) + 6)
-            in_y = item.y in range(int(current_stone.y) - 5, int(current_stone.y) + 6)
+            in_x = item.x in range(int(current_stone.x) - (radius-1), int(current_stone.x) + radius)
+            in_y = item.y in range(int(current_stone.y) - (radius-1), int(current_stone.y) + radius)
             if in_x and in_y and item.color == current_stone.color:
                 filtered_history.append(item)
         return filtered_history
@@ -48,7 +48,6 @@ class Referee:
 
     @staticmethod
     def is_connected(numbers: List[int]) -> bool:
-        print("lists:", numbers)
         last = sorted(numbers)[0]
         connect = 0
         for i in sorted(numbers):
@@ -57,25 +56,24 @@ class Referee:
             else:
                 connect = 0
             last = i
-        print(connect)
         if connect >= 5:
             return True
         else:
             return False
 
     def horizontal(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
-        out = []
+        x_coords = []
         for stone in stone_history:
             if stone.y == current_stone.y:
-                out.append(int(stone.x))
-        return self.is_connected(out)
+                x_coords.append(int(stone.x))
+        return self.is_connected(x_coords)
 
     def vertical(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
-        out = []
+        y_coords = []
         for stone in stone_history:
             if stone.x == current_stone.x:
-                out.append(int(stone.y))
-        return self.is_connected(out)
+                y_coords.append(int(stone.y))
+        return self.is_connected(y_coords)
 
     def diagonal(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
         # direction: /
@@ -88,29 +86,29 @@ class Referee:
             lambda x, y: (x + 1, y - 1),
             lambda x, y: (x - 1, y + 1),
         ]
-        bool_positive = self.check_diagonal_by_direction(stone_history, current_stone, direction_positive)
-        bool_negative = self.check_diagonal_by_direction(stone_history, current_stone, direction_negative)
+        is_positive_diagonal_connected = self.check_diagonal_by_direction(stone_history, current_stone, direction_positive)
+        is_negative_diagonal_connected = self.check_diagonal_by_direction(stone_history, current_stone, direction_negative)
 
-        return bool_positive | bool_negative
+        return is_positive_diagonal_connected | is_negative_diagonal_connected
 
     @staticmethod
-    def check_diagonal_by_direction(all_position, current_stone, direction) -> bool:
+    def check_diagonal_by_direction(all_positions, current_stone, direction) -> bool:
         dir_list = [Stone(current_stone.x, current_stone.y, current_stone.color)]
         for dir_func in direction:
-            cx, cy = current_stone.x, current_stone.y
+            current_x, current_y = current_stone.x, current_stone.y
             for i in range(5):
-                new_x, new_y = dir_func(cx, cy)
+                new_x, new_y = dir_func(current_x, current_y)
                 dir_list.append(Stone(new_x, new_y, current_stone.color))
-                cx, cy = new_x, new_y
-        find = []
+                current_x, current_y = new_x, new_y
+        in_position = []
         for item in sorted(dir_list, key=lambda s: s.x):
-            if item in all_position:
-                find.append("1")
+            if item in all_positions:
+                in_position.append("1")
             else:
-                find.append("0")
+                in_position.append("0")
 
-        find_string = "".join(find)
-        return "111111" in find_string
+        in_position_concat = "".join(in_position)
+        return "111111" in in_position_concat
 
     @staticmethod
     def tie_check(log: List[Stone], board: Board) -> bool:
