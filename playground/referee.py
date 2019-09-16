@@ -111,14 +111,13 @@ class Referee:
                 direction_list.append(Stone(str(new_x), str(new_y), current_stone.color))
                 current_x, current_y = new_x, new_y
         in_position = []
-        for item in sorted(direction_list, key=lambda s: s.x):
+        for item in sorted(direction_list, key=lambda s: int(s.x)):
             if item in all_positions:
                 in_position.append("1")
             else:
                 in_position.append("0")
 
         in_position_concat = "".join(in_position)
-
         return "111111" in in_position_concat
 
     @staticmethod
