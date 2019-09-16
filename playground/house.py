@@ -34,10 +34,10 @@ class House:
                 stone = self.bot.random_bot()
 
             if self.referee.valid_check(stone, self.board.log):
-                print(f"{order} stone: {stone.x},{stone.y},{turn}")
-                placement_result = self.referee.end_check(stone, self.board.log)
-                tie_check = self.referee.tie_check(self.board.log.append(stone))
                 self.board.put_stone(stone)
+                print(f"{order} stone: {stone.x},{stone.y},{turn}")
+                placement_result = self.referee.end_check(self.board.log)
+                tie_check = self.referee.tie_check(self.board.log, self.board)
                 if (placement_result != "keep play") | tie_check:
                     break
             else:
