@@ -160,10 +160,9 @@ if __name__ == "__main__":
         Stone("4", "1", "b"),
         Stone("5", "1", "b"),
         Stone("5", "2", "w"),
-        Stone("8", "2", "w"),
-        Stone("10", "1", "b"),
-        Stone("11", "1", "b"),
-        Stone("9", "2", "w"),
+        Stone("15", "2", "w"),
+        Stone("5", "4", "b"),
+        Stone("7", "3", "b"),
         Stone("6", "2", "w"),
     ]
     diagonal_test_log = [
