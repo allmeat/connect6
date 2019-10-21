@@ -1,4 +1,5 @@
 from typing import List
+
 from board import Board, Stone
 
 
@@ -59,7 +60,7 @@ class Referee:
         return horizontal_check or vertical_check or diagonal_check
 
     @staticmethod
-    def is_connected(stone_positions: List[int]) -> bool:
+    def is_connected(stone_positions: List[int], size: int = 6) -> bool:
         connection = False
         i = 0
         connect = 0
@@ -69,7 +70,7 @@ class Referee:
                 connect += 1
             else:
                 connect = 0
-            if connect >= 5:
+            if connect >= (size - 1):
                 connection = True
                 break
             i += 1
@@ -101,7 +102,8 @@ class Referee:
     @staticmethod
     def check_diagonal_by_direction(all_positions: List[Stone],
                                     current_stone: Stone,
-                                    directions
+                                    directions,
+                                    size: int = 6
                                     ) -> bool:
         direction_list = [Stone(current_stone.x, current_stone.y, current_stone.color)]
         for direction in directions:
@@ -118,7 +120,7 @@ class Referee:
                 in_position.append("0")
 
         in_position_concat = "".join(in_position)
-        return "111111" in in_position_concat
+        return "1" * size in in_position_concat
 
     @staticmethod
     def tie_check(log: List[Stone], board: Board) -> bool:
