@@ -13,7 +13,9 @@ class Bot:
         y = randint(1, 19)
         return Stone(str(x), str(y), self.color)
 
-    def linear_bot(self, log: List[Stone]) -> Stone:
+    def basic_bot(self, log: List[Stone]) -> Stone:
+        turn = "b" if (len(log) + 1) % 4 in [0, 1] else "w"
+
         return Stone(str(10), str(10), self.color)
 
 
