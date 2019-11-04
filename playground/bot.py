@@ -1,8 +1,8 @@
 from typing import List
-from random import randint
+from random import randint, choice
 from board import Stone
 from tei_bot import ReadBoard
-from random import choice
+
 
 class Bot:
 
