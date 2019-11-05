@@ -1,4 +1,5 @@
-from typing import List, Tuple, Dict
+from typing import List, DefaultDict
+from collections import defaultdict
 from random import randint, random
 from board import Stone
 
@@ -13,27 +14,68 @@ class Bot:
         y = randint(1, 19)
         return Stone(str(x), str(y), self.color)
 
-    @staticmethod
-    def limit_focus(stone: Stone, k: int = 6) -> List[List[Tuple[int, int]]]:
-        x = int(stone.x)
-        y = int(stone.y)
-        focus_horizontal = [(focus_x, y) for focus_x in range(x - k + 1, x + k)]
-        focus_vertical = [(x, focus_y) for focus_y in range(y - k + 1, y + k)]
-        focus_positive_diagonal = []
-        focus_negative_diagonal = []
-        for d in range(-k + 1, k):
-            focus_positive_diagonal.append((x + d, y + d))
-            focus_negative_diagonal.append((x + d, y - d))
-        return [focus_horizontal, focus_vertical, focus_positive_diagonal, focus_negative_diagonal]
+    # @staticmethod
+    # def limit_focus(stone: Stone, k: int = 6) -> List[List[Tuple[int, int]]]:
+    #     x = int(stone.x)
+    #     y = int(stone.y)
+    #     focus_horizontal = [(focus_x, y) for focus_x in range(x - k + 1, x + k)]
+    #     focus_vertical = [(x, focus_y) for focus_y in range(y - k + 1, y + k)]
+    #     focus_positive_diagonal = []
+    #     focus_negative_diagonal = []
+    #     for d in range(-k + 1, k):
+    #         focus_positive_diagonal.append((x + d, y + d))
+    #         focus_negative_diagonal.append((x + d, y - d))
+    #     return [focus_horizontal, focus_vertical, focus_positive_diagonal, focus_negative_diagonal]
+
+    # @staticmethod
+    # def list_to_dict(log: List[Stone]) -> Dict[Tuple[int, int], str]:
+    #     stone_dict = {}
+    #     for item in log:
+    #         stone_dict[(int(item.x), int(item.y))] = item.color
+    #     return stone_dict
+
+    # @staticmethod
+    # def find_k_stones
 
     @staticmethod
-    def list_to_dict(log: List[Stone]) -> Dict[Tuple[int, int], str]:
-        stone_dict = {}
-        for item in log:
-            stone_dict[(int(item.x), int(item.y))] = item.color
-        return stone_dict
+    def cartesian_connection_check(groups: DefaultDict[int, List]) -> List[List[(int, int)]]:
+        for group_key in groups:
+            group = groups[group_key]
+            sort_group = sorted(group)
+            diff = [str(sort_group[i + 1] - sort_group[i]) for i in range(len(sort_group) - 1)]
+            diff_string = [len(d) for d in "".join(diff).split("0") if len(d) > 0]
+            # if "1,1,1,1,1" in diff_string:
+            #     return True
+            # else:
+            #     return False
 
-    def basic_bot(self, log: List[Stone]) -> Stone:
+    @staticmethod
+    def diagonal_connection_check(current_position: List[int], all_position: List[List[int]]) -> int:
+        # recursive
+        def count_lower_right(cnt: int, current: List[int]) -> int:
+            next_position = [p + 1 for p in current]
+            if next_position in all_position:
+                cnt = count_lower_right(cnt + 1, next_position)
+                return cnt
+            else:
+                return cnt
+
+        return count_lower_right(0, current_position)
+
+    def order_connection(self, positions: List[(int, int)]) -> List[List[(int, int)]]:
+        horizontal_dict = defaultdict(list)
+        vertical_dict = defaultdict(list)
+        diagonal_count = [0]
+        for p in positions:
+            horizontal_dict[p[0]].append(p[1])
+            vertical_dict[p[1]].append(p[0])
+            diagonal_count.append(self.diagonal_connection_check(p, positions))
+
+        horizontal_check = self.cartesian_connection_check(horizontal_dict)
+        vertical_check = self.cartesian_connection_check(vertical_dict)
+
+
+    def alex_bot(self, log: List[Stone]) -> Stone:
         turn = "b" if (len(log) + 1) % 4 in [0, 1] else "w"
         if len(log) == 0:
             result = Stone(str(10), str(10), turn)
@@ -42,21 +84,23 @@ class Bot:
             next_y = int(log[0].y) + (1 if random() > 0.5 else -1)
             result = Stone(str(next_x), str(next_y), turn)
         else:
-            log_dict = self.list_to_dict(log)
-            focus_latest = self.limit_focus(log[-1])
-            for candidates in focus_latest:
-                stone_color = []
-                for candidate in candidates:
-                    stone_color.append(log_dict.get(candidate, ""))
-                print(stone_color)
+            log_dict = defaultdict(list)
+            for item in log:
+                log_dict[item.color].append((int(item.x), int(item.y)))
+            black_stones = log_dict["b"]
+            white_stones = log_dict["w"]
 
+            # log_dict = self.list_to_dict(log)
+            # longest_open_connection =
+            # longes_half_open_connection =
+            # focus_latest = self.limit_focus(log[-1])
+            # for candidates in focus_latest:
+            #     stone_color = []
+            #     for candidate in candidates:
+            #         stone_color.append(log_dict.get(candidate, ""))
+            #     print(stone_color)
 
-            result = Stone(str(10), str(10), self.color)
-            # latest_x = int(log[-1].x)
-            # latest_y = int(log[-1].y)
-            # focus_horizental = [(focus_x, latest_y) for focus_x in range(latest_x - 5, latest_x + 6)]
-            # focus_vertical = [(latest_x, focus_y) for focus_y in range(latest_y - 5, latest_x + 6)]
-            # focus_p_diagonal = [(latest_x, focus_y) for focus_y in range(latest_y - 5, latest_x + 6)]
+            result = Stone(str(10), str(10), turn)
 
         return result
 
