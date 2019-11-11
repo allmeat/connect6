@@ -84,21 +84,21 @@ class TeiBot:
         print(join_row)
 
     def suggest_positions(self, lower=1, upper=19) -> List[Stone]:
-        suggestion = []
+        suggestions = []
         for d in ['r', 'l', 'u', 'd', 'ul', 'ur', 'dl', 'dr']:
             position = list(map(lambda x: self.move_stone(x, d, 1), self.log))
             position = list(filter(lambda x: lower <= int(x.x) <= upper and lower <= int(x.y) <= upper, position))
-            suggestion = suggestion + position
+            suggestions = suggestions + position
 
-        suggestion = set(map(lambda x: x.x + " " + x.y, suggestion))
-        suggestion = list(map(lambda x: x.split(" "), suggestion))
-        suggestion = list(map(lambda z: Stone(z[0], z[1], 's'), suggestion))
-        nplog = self.stone_to_array(self.log)
-        suggestion = self.stone_to_array(suggestion)
-        suggestion = np.clip(nplog + suggestion, -1, 0)
-        suggestion = self.array_to_stone(suggestion, "s")
+        suggestions = set(map(lambda x: x.x + " " + x.y, suggestions))
+        suggestions = list(map(lambda x: x.split(" "), suggestions))
+        suggestions = list(map(lambda z: Stone(z[0], z[1], 's'), suggestions))
+        stone_array = self.stone_to_array(self.log)
+        suggestions = self.stone_to_array(suggestions)
+        suggestions = np.clip(stone_array + suggestions, -1, 0)
+        suggestions = self.array_to_stone(suggestions, "s")
 
-        return suggestion
+        return suggestions
 
 
 if __name__ == "__main__":

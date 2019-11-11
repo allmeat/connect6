@@ -58,15 +58,12 @@ class House:
             if not self.referee.valid_check(stone, self.board.log):
                 return print("invalid")
 
-            # if self.referee.valid_check(stone, self.board.log):
             self.board.put_stone(stone)
             print(f"{order} stone: {stone.x},{stone.y},{turn}")
             placement_result = self.referee.end_check(self.board.log)
             tie_check = self.referee.tie_check(self.board.log, self.board)
             if (placement_result != "keep play") | tie_check:
                 break
-            # else:
-            #     print("invalid stone input")
 
         self.board.render_figure()
 
