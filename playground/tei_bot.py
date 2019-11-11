@@ -50,7 +50,7 @@ class TeiBot:
         return stones
 
     @staticmethod
-    def move(stone, direction, stride=1):
+    def move_stone(stone, direction, stride=1):
         x = int(stone.x)
         y = int(stone.y)
 
@@ -79,16 +79,14 @@ class TeiBot:
 
     def draw_board(self):
         stone_array = self.stone_to_array(self.log)
-        alphabet = "a b c d e f g h i j k l m n o p q r s t u".split(" ")
-        row_index = " ".join(list(map(lambda y: y, alphabet)))
         join_column = list(map(lambda y: " ".join([self.array_to_board(x) for i, x in enumerate(y)]), stone_array))
-        join_row = row_index + "\n" + "\n".join(join_column)
+        join_row = "\n" + "\n".join(join_column)
         return join_row
 
     def suggest_position(self, lower=1, upper=19):
         suggestion = []
         for d in ['r', 'l', 'u', 'd', 'ul', 'ur', 'dl', 'dr']:
-            position = list(map(lambda x: self.move(x, d, 1), self.log))
+            position = list(map(lambda x: self.move_stone(x, d, 1), self.log))
             position = list(filter(lambda x: lower <= int(x.x) <= upper and lower <= int(x.y) <= upper, position))
             suggestion = suggestion + position
 
