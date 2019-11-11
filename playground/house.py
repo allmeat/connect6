@@ -56,7 +56,8 @@ class House:
                 stone = Bot("w").tei_bot(self.board.log)
 
             if not self.referee.valid_check(stone, self.board.log):
-                return print("invalid")
+                print("invalid")
+                return
 
             self.board.put_stone(stone)
             print(f"{order} stone: {stone.x},{stone.y},{turn}")

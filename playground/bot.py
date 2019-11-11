@@ -23,7 +23,7 @@ class Bot:
             y = choice(range(1, 20))
             position = Stone(str(x), str(y), self.color)
         else:
-            possible_position = TeiBot(log).suggest_position()
+            possible_position = TeiBot(log).suggest_positions()
             position = choice(possible_position)
             position.color = self.color
         return position
