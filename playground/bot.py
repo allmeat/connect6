@@ -1,7 +1,14 @@
 from typing import List, DefaultDict
 from collections import defaultdict
+from dataclasses import dataclass
 from random import randint, random
 from board import Stone
+
+
+@dataclass
+class StoneOnLine:
+    position: int
+    color: str
 
 
 class Bot:
@@ -15,80 +22,74 @@ class Bot:
         return Stone(str(x), str(y), self.color)
 
     # @staticmethod
-    # def limit_focus(stone: Stone, k: int = 6) -> List[List[Tuple[int, int]]]:
-    #     x = int(stone.x)
-    #     y = int(stone.y)
-    #     focus_horizontal = [(focus_x, y) for focus_x in range(x - k + 1, x + k)]
-    #     focus_vertical = [(x, focus_y) for focus_y in range(y - k + 1, y + k)]
-    #     focus_positive_diagonal = []
-    #     focus_negative_diagonal = []
-    #     for d in range(-k + 1, k):
-    #         focus_positive_diagonal.append((x + d, y + d))
-    #         focus_negative_diagonal.append((x + d, y - d))
-    #     return [focus_horizontal, focus_vertical, focus_positive_diagonal, focus_negative_diagonal]
+    # def cartesian_connection_check(groups: DefaultDict[int, List]) -> List[List[(int, int)]]:
+    #     for group_key in groups:
+    #         group = groups[group_key]
+    #         sort_group = sorted(group)
+    #         diff = [str(sort_group[i + 1] - sort_group[i]) for i in range(len(sort_group) - 1)]
+    #         diff_string = [len(d) for d in "".join(diff).split("0") if len(d) > 0]
 
     # @staticmethod
-    # def list_to_dict(log: List[Stone]) -> Dict[Tuple[int, int], str]:
-    #     stone_dict = {}
-    #     for item in log:
-    #         stone_dict[(int(item.x), int(item.y))] = item.color
-    #     return stone_dict
-
-    # @staticmethod
-    # def find_k_stones
-
-    @staticmethod
-    def cartesian_connection_check(groups: DefaultDict[int, List]) -> List[List[(int, int)]]:
-        for group_key in groups:
-            group = groups[group_key]
-            sort_group = sorted(group)
-            diff = [str(sort_group[i + 1] - sort_group[i]) for i in range(len(sort_group) - 1)]
-            diff_string = [len(d) for d in "".join(diff).split("0") if len(d) > 0]
-            # if "1,1,1,1,1" in diff_string:
-            #     return True
-            # else:
-            #     return False
+    # def diagonal_connection_check(current_position: List[int], all_position: List[List[int]]) -> int:
+    #     recursive
+        # def count_lower_right(cnt: int, current: List[int]) -> int:
+        #     next_position = [p + 1 for p in current]
+        #     if next_position in all_position:
+        #         cnt = count_lower_right(cnt + 1, next_position)
+        #         return cnt
+        #     else:
+        #         return cnt
+        #
+        # return count_lower_right(0, current_position)
 
     @staticmethod
-    def diagonal_connection_check(current_position: List[int], all_position: List[List[int]]) -> int:
-        # recursive
-        def count_lower_right(cnt: int, current: List[int]) -> int:
-            next_position = [p + 1 for p in current]
-            if next_position in all_position:
-                cnt = count_lower_right(cnt + 1, next_position)
-                return cnt
-            else:
-                return cnt
+    def check_turn(log: List[Stone]) -> str:
+        return "b" if (len(log) + 1) % 4 in [0, 1] else "w"
 
-        return count_lower_right(0, current_position)
+    @staticmethod
+    def random_walk() -> int:
+        return 1 if random() > 0.5 else -1
 
-    def order_connection(self, positions: List[(int, int)]) -> List[List[(int, int)]]:
-        horizontal_dict = defaultdict(list)
-        vertical_dict = defaultdict(list)
-        diagonal_count = [0]
-        for p in positions:
-            horizontal_dict[p[0]].append(p[1])
-            vertical_dict[p[1]].append(p[0])
-            diagonal_count.append(self.diagonal_connection_check(p, positions))
+    @staticmethod
+    def reverse_stone_color(color: str) -> str:
+        return "b" if color == "w" else "w"
 
-        horizontal_check = self.cartesian_connection_check(horizontal_dict)
-        vertical_check = self.cartesian_connection_check(vertical_dict)
-
+    def sort_line(self, line: List[StoneOnLine], turn: str) -> List[StoneOnLine]:
+        line = sorted(line, key=lambda stone_on_line: stone_on_line.position)
+        if line[0].position == 1:
+            line.insert(0, StoneOnLine(0, self.reverse_stone_color(turn)))
+        if line[-1].position == 19:
+            line.append(StoneOnLine(20, self.reverse_stone_color(turn)))
+        return line
 
     def alex_bot(self, log: List[Stone]) -> Stone:
-        turn = "b" if (len(log) + 1) % 4 in [0, 1] else "w"
+        turn = self.check_turn(log)
         if len(log) == 0:
             result = Stone(str(10), str(10), turn)
         elif len(log) == 1:
-            next_x = int(log[0].x) + (1 if random() > 0.5 else -1)
-            next_y = int(log[0].y) + (1 if random() > 0.5 else -1)
+            next_x = int(log[0].x) + self.random_walk()
+            next_y = int(log[0].y) + self.random_walk()
             result = Stone(str(next_x), str(next_y), turn)
         else:
-            log_dict = defaultdict(list)
-            for item in log:
-                log_dict[item.color].append((int(item.x), int(item.y)))
-            black_stones = log_dict["b"]
-            white_stones = log_dict["w"]
+            log_x = [int(stone.x) for stone in log]
+            log_y = [int(stone.y) for stone in log]
+
+            # horizontal search
+            for y in range(min(log_y), max(log_y)):
+                horizontal = [StoneOnLine(int(stone.x), stone.color) for stone in log if stone.y == str(y)]
+                horizontal = self.sort_line(horizontal, turn)
+
+            # vertical search
+            for x in range(min(log_x), max(log_x)):
+                vertical = [StoneOnLine(int(stone.y), stone.color) for stone in log if stone.x == str(x)]
+                vertical = self.sort_line(vertical, turn)
+
+
+            # log_dict = defaultdict(list)
+            # for item in log:
+            #     log_dict[item.color].append((int(item.x), int(item.y)))
+            # black_stones = log_dict["b"]
+            # white_stones = log_dict["w"]
 
             # log_dict = self.list_to_dict(log)
             # longest_open_connection =
@@ -126,4 +127,4 @@ if __name__ == "__main__":
     bot = Bot("w")
     print("--random bot")
     print("\t--white random stone: ", bot.random_bot())
-    print("\t--basic bot: ", bot.basic_bot(test_log))
+    # print("\t--basic bot: ", bot.basic_bot(test_log))
