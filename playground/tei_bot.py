@@ -3,111 +3,104 @@ from typing import List
 from board import Stone
 
 
-class ReadBoard:
+class TeiBot:
 
-    def __init__(self, logs:List[Stone]):
-        self.logs=logs
-
-    @staticmethod
-    def np2board(x):
-        if x==0:
-            out="+"
-        elif x==1:
-            out="B"
-        elif x==2:
-            out="W"
-        elif x==-1:
-            out="S"
-        return out
-
+    def __init__(self, log: List[Stone]):
+        self.log = log
 
     @staticmethod
-    def stone2np(logs):
-        aa = np.zeros((21, 21))
-        for pos in logs:
+    def array_to_board(x: int) -> str:
+        if x == 0:
+            points = "+"
+        elif x == 1:
+            points = "B"
+        elif x == 2:
+            points = "W"
+        else:  # x == -1:
+            points = "S"
+        return points
+
+    @staticmethod
+    def stone_to_array(log: List[Stone]) -> np.array:
+        stone_array = np.zeros((19, 19))
+        for pos in log:
             x = int(pos.x) - 1
             y = int(pos.y) - 1
             if pos.color == "b":
-                aa[y, x] = 1
+                stone_array[y, x] = 1
             elif pos.color == "w":
-                aa[y, x] = 2
+                stone_array[y, x] = 2
             elif pos.color == "s":
-                aa[y, x] = -1
-        return aa
+                stone_array[y, x] = -1
+        return stone_array
 
     @staticmethod
-    def np2stone(npArray, col):
+    def array_to_stone(stone_array: np.array, color: str) -> List[Stone]:
+        if color == "b":
+            out = 1
+        elif color == "w":
+            out = 2
+        else:
+            out = -1
 
-        if col=="b":
-            out=1
-        elif col=="w":
-            out=2
-        elif col == "s":
-            out=-1
-
-        y, x = np.where(npArray==out)
-        coord = list(zip(list(x), list(y)))
-        stones = [Stone(str(x+1), str(y+1), col) for x, y in coord]
+        y, x = np.where(stone_array == out)
+        positions = list(zip(list(x), list(y)))
+        stones = [Stone(str(x + 1), str(y + 1), color) for x, y in positions]
 
         return stones
 
     @staticmethod
     def move(stone, direction, stride=1):
-
         x = int(stone.x)
         y = int(stone.y)
 
         if direction == 'l':
             x = x - stride
-        if direction == 'r':
+        elif direction == 'r':
             x = x + stride
-        if direction == 'u':
+        elif direction == 'u':
             y = y - stride
-        if direction == 'd':
+        elif direction == 'd':
             y = y + stride
-        if direction == 'ul':
+        elif direction == 'ul':
             y = y - stride
             x = x - stride
-        if direction == 'ur':
+        elif direction == 'ur':
             y = y - stride
             x = x + stride
-        if direction == 'dl':
+        elif direction == 'dl':
             y = y + stride
             x = x - stride
-        if direction == 'dr':
+        elif direction == 'dr':
             y = y + stride
             x = x + stride
 
         return Stone(str(x), str(y), stone.color)
 
-
-    def drawboard(self):
-
-        npData = self.stone2np(self.logs)
+    def draw_board(self):
+        stone_array = self.stone_to_array(self.log)
         alphabet = "a b c d e f g h i j k l m n o p q r s t u".split(" ")
-        rowIndex = " ".join(list(map(lambda y : y, alphabet)))
-        a1 = list(map(lambda y: " ".join([self.np2board(x) for i, x in enumerate(y)]), npData))
-        a2 = rowIndex + "\n" + "\n".join(a1)
-        return a2
+        row_index = " ".join(list(map(lambda y: y, alphabet)))
+        join_column = list(map(lambda y: " ".join([self.array_to_board(x) for i, x in enumerate(y)]), stone_array))
+        join_row = row_index + "\n" + "\n".join(join_column)
+        return join_row
 
-
-    def suggestedPosition(self, l=1, u=21):
-
-        suggested = []
+    def suggest_position(self, lower=1, upper=19):
+        suggestion = []
         for d in ['r', 'l', 'u', 'd', 'ul', 'ur', 'dl', 'dr']:
-            position = list(map(lambda x: self.move(x, d, 1), self.logs))
-            position = list(filter(lambda x: int(x.x)>=l and int(x.x)<=u and int(x.y)>=l and int(x.y)<=u, position))
-            suggested = suggested + position
+            position = list(map(lambda x: self.move(x, d, 1), self.log))
+            position = list(filter(lambda x: lower <= int(x.x) <= upper and lower <= int(x.y) <= upper, position))
+            suggestion = suggestion + position
 
-        suggested = set(map(lambda x: x.x + " " + x.y, suggested))
-        suggested = list(map(lambda x: x.split(" "), suggested))
-        suggested = list(map(lambda z: Stone(z[0], z[1], 's'), suggested))
-        npLogs = self.stone2np(self.logs)
-        suggested = self.stone2np(suggested)
-        suggested = np.clip(npLogs + suggested, -1, 0)
-        suggested = self.np2stone(suggested, "s")
+        suggestion = set(map(lambda x: x.x + " " + x.y, suggestion))
+        suggestion = list(map(lambda x: x.split(" "), suggestion))
+        suggestion = list(map(lambda z: Stone(z[0], z[1], 's'), suggestion))
+        nplog = self.stone_to_array(self.log)
+        suggestion = self.stone_to_array(suggestion)
+        suggestion = np.clip(nplog + suggestion, -1, 0)
+        suggestion = self.array_to_stone(suggestion, "s")
 
-        return suggested
+        return suggestion
 
 
 if __name__ == "__main__":
@@ -157,9 +150,8 @@ if __name__ == "__main__":
         Stone("6", "6", "w"),
     ]
 
-    logs = ReadBoard(diagonal_test_log)
-    print(logs.drawboard())
+    test_result = TeiBot(diagonal_test_log)
+    print(test_result.draw_board())
 
-    a2 = logs.suggestedPosition()
-    print(ReadBoard(a2).drawboard())
-
+    a2 = test_result.suggest_position()
+    print(TeiBot(a2).draw_board())
