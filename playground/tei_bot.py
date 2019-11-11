@@ -81,9 +81,9 @@ class TeiBot:
         stone_array = self.stone_to_array(self.log)
         join_column = list(map(lambda y: " ".join([self.array_to_board(x) for i, x in enumerate(y)]), stone_array))
         join_row = "\n" + "\n".join(join_column)
-        return join_row
+        print(join_row)
 
-    def suggest_position(self, lower=1, upper=19):
+    def suggest_positions(self, lower=1, upper=19) -> List[Stone]:
         suggestion = []
         for d in ['r', 'l', 'u', 'd', 'ul', 'ur', 'dl', 'dr']:
             position = list(map(lambda x: self.move_stone(x, d, 1), self.log))
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     ]
 
     test_result = TeiBot(diagonal_test_log)
-    print(test_result.draw_board())
+    test_result.draw_board()
 
-    a2 = test_result.suggest_position()
-    print(TeiBot(a2).draw_board())
+    a2 = test_result.suggest_positions()
+    TeiBot(a2).draw_board()
