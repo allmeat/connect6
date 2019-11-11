@@ -99,10 +99,31 @@ class Board:
 
 
 if __name__ == "__main__":
+    test_log = [
+        Stone("3", "2", "b"),
+        Stone("2", "1", "w"),
+        Stone("2", "2", "w"),
+        Stone("1", "2", "b"),
+        Stone("1", "3", "b"),
+        Stone("2", "3", "w"),
+        Stone("2", "4", "w"),
+        Stone("1", "4", "b"),
+        Stone("1", "5", "b"),
+        Stone("2", "5", "w"),
+        Stone("2", "8", "w"),
+        Stone("1", "10", "b"),
+        Stone("1", "11", "b"),
+        Stone("2", "9", "w"),
+        Stone("2", "6", "w"),
+        # Stone("17", "17", "b"),
+        # Stone("18", "18", "b"),
+    ]
+
     board = Board()
     print("--render board")
-    board.render_figure()
+    # board.render_figure()
     print("--put stone")
-    board.put_stone(Stone("10", "10", "b"))
-    print("\t--log: ", board.log)
+    for stone in test_log:
+        board.put_stone(stone)
+    # print("\t--log: ", board.log)
     board.render_figure()
