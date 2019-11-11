@@ -45,9 +45,32 @@ class House:
 
         self.board.render_figure()
 
+    def simulate(self):
+        while True:
+            turn = self.referee.turn_check(self.board.log)
+            if self.player_first == (turn == "b"):
+                order = "player"
+                stone = Bot("b").tei_bot(self.board.log)
+            else:
+                order = "bot"
+                stone = Bot("w").tei_bot(self.board.log)
+
+            if not self.referee.valid_check(stone, self.board.log):
+                print("invalid")
+                return
+
+            self.board.put_stone(stone)
+            print(f"{order} stone: {stone.x},{stone.y},{turn}")
+            placement_result = self.referee.end_check(self.board.log)
+            tie_check = self.referee.tie_check(self.board.log, self.board)
+            if (placement_result != "keep play") | tie_check:
+                break
+
+        self.board.render_figure()
+
 
 if __name__ == "__main__":
     coin_toss = True if random() > 0.5 else False
     print("player first: ", coin_toss)
     house = House(coin_toss)
-    house.play()
+    house.simulate()
