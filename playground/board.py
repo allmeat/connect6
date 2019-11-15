@@ -103,6 +103,7 @@ if __name__ == "__main__":
     print("--render board")
     board.render_figure()
     print("--put stone")
+    board.put_stone(Stone("10", "10", "b"))
     print("\t--log: ", board.log)
 
     board.render_figure()
