@@ -11,14 +11,14 @@ class Window:
     position: List[Tuple[int, int]]
 
 
-class Bot:
+class AlexBot:
 
     def __init__(self, k: int = 6, m: int = 19, n: int = 19):
         self.k = k
         self.m = m
         self.n = n
 
-    def alex_bot(self, log: List[Stone]) -> Stone:
+    def put_stone(self, log: List[Stone]) -> Stone:
         turn = "b" if (len(log) + 1) % 4 in [0, 1] else "w"
         if len(log) == 0:
             return Stone(str(10), str(10), turn)
@@ -39,22 +39,26 @@ class Bot:
         focus_area = np.zeros((lower_end - upper_end, right_end - left_end), dtype=int)
         for stone in log:
             focus_area[int(stone.y) - upper_end, int(stone.x) - left_end] = 1 if stone.color == "b" else -1
+        print(focus_area)
 
         horizontal = self.find_connection(focus_area, "h", left_end, upper_end)
         vertical = self.find_connection(focus_area, "v", left_end, upper_end)
         negative_diagonal = self.find_connection(focus_area, "nd", left_end, upper_end)
         positive_diagonal = self.find_connection(focus_area, "pd", left_end, upper_end)
+        candidates = horizontal + vertical + negative_diagonal + positive_diagonal
 
-        candidates = (
-            sorted(
-                horizontal + vertical + negative_diagonal + positive_diagonal,
-                key=lambda x: abs(sum(x.pattern)),
-                reverse=True,
-            )
-        )
+        max_stone = max([self.stone_sum(candidate) for candidate in candidates])
+        if max_stone >= self.k:
+            return Stone("1", "1", turn)
+        print(max_stone)
 
-        window_index = choice([i for i, x in enumerate(candidates[0].pattern) if x == 0])
-        position = candidates[0].position[window_index]
+        for item in candidates:
+            print(item)
+
+        max_stone_candidate = choice([candidate for candidate in candidates if self.stone_sum(candidate) == max_stone])
+
+        window_index = choice([i for i, x in enumerate(max_stone_candidate.pattern) if x == 0])
+        position = max_stone_candidate.position[window_index]
 
         return Stone(str(position[0]), str(position[1]), turn)
 
@@ -115,15 +119,15 @@ class Bot:
                     connections, max_stone = self.check_window(window, connections, max_stone)
             return connections
 
-    @staticmethod
-    def check_window(window: Window,
+    def check_window(self,
+                     window: Window,
                      connections: List[Window],
                      max_stone: int,
                      ) -> (List[Window], int):
         if 1 in window.pattern and -1 in window.pattern:
             return connections, max_stone
 
-        stone_count = abs(sum(window.pattern))
+        stone_count = self.stone_sum(window)
 
         if max_stone > stone_count:
             return connections, max_stone
@@ -133,6 +137,10 @@ class Bot:
 
         connections.append(window)
         return connections, max_stone
+
+    @staticmethod
+    def stone_sum(window: Window) -> int:
+        return abs(sum(window.pattern))
 
 
 if __name__ == "__main__":
@@ -173,6 +181,6 @@ if __name__ == "__main__":
         Stone("5", "10", "b"),
         Stone("7", "5", "w"),
     ]
-    bot = Bot()
+    alex_bot = AlexBot()
     # print("\t--basic bot: ", bot.alex_bot(test_log))
-    print("\t--basic bot: ", bot.alex_bot(diagonal_test_log))
+    print("\t--basic bot: ", alex_bot.put_stone(diagonal_test_log))
