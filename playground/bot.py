@@ -1,5 +1,7 @@
-from random import randint
+from typing import List
+from random import randint, choice
 from board import Stone
+from tei_bot import TeiBot
 
 
 class Bot:
@@ -14,6 +16,17 @@ class Bot:
 
     def linear_bot(self) -> Stone:
         return Stone(str(10), str(10), self.color)
+
+    def tei_bot(self, log: List[Stone]) -> Stone:
+        if len(log) == 0:
+            x = choice(range(1, 20))
+            y = choice(range(1, 20))
+            position = Stone(str(x), str(y), self.color)
+        else:
+            possible_position = TeiBot(log).suggest_positions()
+            position = choice(possible_position)
+            position.color = self.color
+        return position
 
 
 if __name__ == "__main__":
@@ -37,3 +50,7 @@ if __name__ == "__main__":
         Stone("11", "11", "b"),
         Stone("6", "6", "w"),
     ]
+
+    print(TeiBot(diagonal_test_log).suggest_positions())
+    print(bot.tei_bot(diagonal_test_log))
+    print(bot.tei_bot([]))
