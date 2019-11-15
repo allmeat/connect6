@@ -2,12 +2,14 @@ from typing import List
 from random import randint, choice
 from board import Stone
 from tei_bot import TeiBot
+from alex_bot import AlexBot
 
 
 class Bot:
 
     def __init__(self, color: str):
         self.color = color
+        self.alex = AlexBot()
 
     def random_bot(self) -> Stone:
         x = randint(1, 19)
@@ -27,6 +29,9 @@ class Bot:
             position = choice(possible_position)
             position.color = self.color
         return position
+
+    def alex_bot(self, log: List[Stone]) -> Stone:
+        return self.alex.put_stone(log)
 
 
 if __name__ == "__main__":
@@ -48,9 +53,11 @@ if __name__ == "__main__":
         Stone("6", "5", "w"),
         Stone("10", "11", "b"),
         Stone("11", "11", "b"),
-        Stone("6", "6", "w"),
+        # Stone("6", "6", "w"),
     ]
 
     print(TeiBot(diagonal_test_log).suggest_positions())
     print(bot.tei_bot(diagonal_test_log))
     print(bot.tei_bot([]))
+
+    print(bot.alex_bot(diagonal_test_log))
