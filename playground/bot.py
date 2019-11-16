@@ -1,5 +1,5 @@
 from typing import List
-from random import randint, choice
+from random import randint
 from board import Stone
 from tei_bot import TeiBot
 from alex_bot import AlexBot
@@ -7,39 +7,30 @@ from alex_bot import AlexBot
 
 class Bot:
 
-    def __init__(self, color: str):
-        self.color = color
+    def __init__(self):
+        self.tei = TeiBot()
         self.alex = AlexBot()
 
-    def random_bot(self) -> Stone:
+    @staticmethod
+    def turn_check(log_length: int) -> str:
+        return "b" if (log_length + 1) % 4 in [0, 1] else "w"
+
+    @staticmethod
+    def random_bot(color: str) -> Stone:
         x = randint(1, 19)
         y = randint(1, 19)
-        return Stone(str(x), str(y), self.color)
-
-    def linear_bot(self) -> Stone:
-        return Stone(str(10), str(10), self.color)
+        return Stone(str(x), str(y), color)
 
     def tei_bot(self, log: List[Stone]) -> Stone:
-        if len(log) == 0:
-            x = choice(range(1, 20))
-            y = choice(range(1, 20))
-            position = Stone(str(x), str(y), self.color)
-        else:
-            possible_position = TeiBot(log).suggest_positions()
-            position = choice(possible_position)
-            position.color = self.color
-        return position
+        return self.tei.put_stone(log)
 
     def alex_bot(self, log: List[Stone]) -> Stone:
         return self.alex.put_stone(log)
 
 
 if __name__ == "__main__":
-    bot = Bot("w")
-    print("--random bot")
-    print("\t--white random stone: ", bot.random_bot())
-
-    diagonal_test_log = [
+    bot = Bot()
+    test_log = [
         Stone("1", "2", "b"),
         Stone("1", "1", "w"),
         Stone("2", "2", "w"),
@@ -53,11 +44,13 @@ if __name__ == "__main__":
         Stone("6", "5", "w"),
         Stone("10", "11", "b"),
         Stone("11", "11", "b"),
-        # Stone("6", "6", "w"),
     ]
 
-    print(TeiBot(diagonal_test_log).suggest_positions())
-    print(bot.tei_bot(diagonal_test_log))
-    print(bot.tei_bot([]))
+    print("--random bot")
+    print("\t--white random stone: ", bot.random_bot("w"))
 
-    print(bot.alex_bot(diagonal_test_log))
+    print("--Tei bot")
+    print("\t--white Tei bot stone: ", bot.tei_bot(test_log))
+
+    print("--Alex bot")
+    print("\t--white Alex bot stone: ", bot.alex_bot(test_log))
