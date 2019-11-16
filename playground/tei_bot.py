@@ -105,35 +105,6 @@ class TeiBot:
 
 
 if __name__ == "__main__":
-    test_log = [
-        Stone("1", "1", "b"),
-        Stone("2", "1", "w"),
-        Stone("2", "2", "w"),
-        Stone("1", "2", "b"),
-        Stone("1", "3", "b"),
-        Stone("2", "3", "w"),
-        Stone("2", "4", "w"),
-        Stone("1", "4", "b"),
-        Stone("1", "5", "b"),
-        Stone("2", "5", "w"),
-        Stone("2", "6", "w"),
-    ]
-    test_horizontal_log = [
-        Stone("1", "1", "b"),
-        Stone("1", "2", "w"),
-        Stone("2", "2", "w"),
-        Stone("2", "1", "b"),
-        Stone("3", "1", "b"),
-        Stone("3", "2", "w"),
-        Stone("4", "2", "w"),
-        Stone("4", "1", "b"),
-        Stone("5", "1", "b"),
-        Stone("5", "2", "w"),
-        Stone("15", "2", "w"),
-        Stone("5", "4", "b"),
-        Stone("7", "3", "b"),
-        Stone("6", "2", "w")
-    ]
     diagonal_test_log = [
         Stone("1", "2", "b"),
         Stone("1", "1", "w"),
@@ -151,8 +122,8 @@ if __name__ == "__main__":
         Stone("6", "6", "w"),
     ]
 
-    test_result = TeiBot()
-    test_result.draw_board(diagonal_test_log)
+    tei_bot = TeiBot()
+    tei_bot.draw_board(diagonal_test_log)
 
-    next_log = test_result.suggest_positions(diagonal_test_log)
-    test_result.draw_board(next_log)
+    suggest_positions = tei_bot.suggest_positions(diagonal_test_log)
+    tei_bot.draw_board(suggest_positions)

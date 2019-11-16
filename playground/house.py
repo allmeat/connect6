@@ -39,18 +39,16 @@ class House:
 
             self.board.put_stone(stone)
             print(f"{order} stone: {stone.x},{stone.y},{turn}")
-            placement_result = self.referee.end_check(self.board.log)
-            tie_check = self.referee.tie_check(self.board.log, self.board)
+            end_check = self.referee.end_check(self.board.log, self.board.config)
+            if end_check.is_end:
+                winner = "no one" if end_check.is_tie else order
+                print(f"{winner} wins")
+                self.board.print_winner(winner)
+                self.board.render_figure()
+                break
 
             if render_every:
                 self.board.render_figure()
-
-            if (placement_result != "keep play") | tie_check:
-                print(f"{order} wins")
-                break
-
-        if not render_every:
-            self.board.render_figure()
 
     def simulate(self, render_every: bool = False, pause: float = 1.0):
         while True:
@@ -68,19 +66,17 @@ class House:
 
             self.board.put_stone(stone)
             print(f"{order} stone: {stone.x},{stone.y},{turn}")
-            placement_result = self.referee.end_check(self.board.log)
-            tie_check = self.referee.tie_check(self.board.log, self.board)
+            end_check = self.referee.end_check(self.board.log, self.board.config)
+            if end_check.is_end:
+                winner = "no one" if end_check.is_tie else order
+                print(f"{winner} wins")
+                self.board.print_winner(winner)
+                self.board.render_figure()
+                break
 
             if render_every:
                 self.board.render_figure()
                 time.sleep(pause)
-
-            if (placement_result != "keep play") | tie_check:
-                print(f"{order} wins")
-                break
-
-        if not render_every:
-            self.board.render_figure()
 
 
 if __name__ == "__main__":
