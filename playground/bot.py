@@ -12,10 +12,6 @@ class Bot:
         self.alex = AlexBot()
 
     @staticmethod
-    def turn_check(log_length: int) -> str:
-        return "b" if (log_length + 1) % 4 in [0, 1] else "w"
-
-    @staticmethod
     def random_bot(color: str) -> Stone:
         x = randint(1, 19)
         y = randint(1, 19)
