@@ -26,7 +26,9 @@ class Referee:
 
     @staticmethod
     def turn_check(log: List[Stone]) -> str:
-        return "b" if (len(log) + 1) % 4 in [0, 1] else "w"
+        if (len(log) + 1) % 4 in [0, 1]:
+            return "b"
+        return "w"
 
     def end_check(self, log: List[Stone]) -> str:
         current_stone = log[-1]
