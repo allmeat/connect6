@@ -52,7 +52,7 @@ class House:
         if not render_every:
             self.board.render_figure()
 
-    def simulate(self, render_every: bool = False, pause: int = 1):
+    def simulate(self, render_every: bool = False, pause: float = 1.0):
         while True:
             turn = self.referee.turn_check(self.board.log)
             if self.first_player_first_move == (turn == "b"):
@@ -87,4 +87,4 @@ if __name__ == "__main__":
     coin_toss = True if random() > 0.5 else False
     print("1p first: ", coin_toss)
     house = House(first_player_first_move=coin_toss)
-    house.simulate(render_every=True)
+    house.simulate(render_every=True, pause=0.5)
