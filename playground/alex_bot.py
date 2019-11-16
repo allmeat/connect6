@@ -148,7 +148,7 @@ class AlexBot:
 
 
 if __name__ == "__main__":
-    test_log = [
+    vertical_test_log = [
         Stone("3", "2", "b"),
         Stone("2", "1", "w"),
         Stone("2", "2", "w"),
@@ -163,7 +163,6 @@ if __name__ == "__main__":
         Stone("1", "10", "b"),
         Stone("1", "11", "b"),
         Stone("2", "9", "w"),
-        Stone("2", "6", "w"),
     ]
     diagonal_test_log = [
         Stone("1", "2", "b"),
@@ -174,7 +173,7 @@ if __name__ == "__main__":
         Stone("3", "3", "w"),
         Stone("4", "4", "w"),
         Stone("1", "5", "b"),
-        Stone("1", "6", "b"),
+        Stone("1", "8", "b"),
         Stone("5", "5", "w"),
         Stone("8", "4", "w"),
         Stone("7", "10", "b"),
@@ -185,5 +184,8 @@ if __name__ == "__main__":
         Stone("5", "10", "b"),
         Stone("7", "5", "w"),
     ]
+
     alex_bot = AlexBot()
-    print("\t--basic bot: ", alex_bot.put_stone(diagonal_test_log))
+    print("--Alex bot")
+    print("\t--x = 2, y = 6, color = w (vertical test): ", alex_bot.put_stone(vertical_test_log))
+    print("\t--x = 6, y = 6, color = w (diagonal test): ", alex_bot.put_stone(diagonal_test_log))
