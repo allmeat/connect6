@@ -14,6 +14,7 @@ class Referee:
             lambda x, y: (x + 1, y - 1),
             lambda x, y: (x - 1, y + 1),
         ]
+        self.color_fullname = {"b": "black", "w": "white"}
 
     @staticmethod
     def valid_check(new_stone: Stone, log: List[Stone]) -> bool:
@@ -25,20 +26,14 @@ class Referee:
 
     @staticmethod
     def turn_check(log: List[Stone]) -> str:
-        if (len(log) + 1) % 4 in [0, 1]:
-            return "b"
-        else:
-            return "w"
+        return "b" if (len(log) + 1) % 4 in [0, 1] else "w"
 
     def end_check(self, log: List[Stone]) -> str:
         current_stone = log[-1]
         is_win = self.connection_check(current_stone, log)
-        color_fullname = {"b": "black", "w": "white"}
-
         if is_win:
-            return f"{color_fullname[current_stone.color]} wins"
-        else:
-            return "keep play"
+            return f"{self.color_fullname[current_stone.color]} wins"
+        return "keep play"
 
     @staticmethod
     def filter_log(log: List[Stone], radius=6):
@@ -90,12 +85,20 @@ class Referee:
         return self.is_connected(y_positions)
 
     def diagonal(self, current_stone: Stone, stone_history: List[Stone]) -> bool:
-        is_positive_diagonal_connected = self.check_diagonal_by_direction(stone_history,
-                                                                          current_stone,
-                                                                          self.direction_positive)
-        is_negative_diagonal_connected = self.check_diagonal_by_direction(stone_history,
-                                                                          current_stone,
-                                                                          self.direction_negative)
+        is_positive_diagonal_connected = (
+            self.check_diagonal_by_direction(
+                stone_history,
+                current_stone,
+                self.direction_positive
+            )
+        )
+        is_negative_diagonal_connected = (
+            self.check_diagonal_by_direction(
+                stone_history,
+                current_stone,
+                self.direction_negative
+            )
+        )
         return is_positive_diagonal_connected or is_negative_diagonal_connected
 
     @staticmethod
@@ -116,7 +119,6 @@ class Referee:
                 in_position.append("1")
             else:
                 in_position.append("0")
-
         in_position_concat = "".join(in_position)
         return "111111" in in_position_concat
 
@@ -126,8 +128,7 @@ class Referee:
         current_turn = len(log)
         if max_turn - current_turn == 1:
             return True
-        else:
-            return False
+        return False
 
 
 if __name__ == "__main__":

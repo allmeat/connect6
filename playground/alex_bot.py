@@ -36,10 +36,14 @@ class AlexBot:
         upper_end = max(min(log_y) - self.k, 1)
         lower_end = min(max(log_y) + self.k, self.n)
 
-        focus_area = np.zeros((lower_end - upper_end, right_end - left_end), dtype=int)
+        width = right_end - left_end + 1
+        height = lower_end - upper_end + 1
+
+        focus_area = np.zeros((height, width), dtype=int)
         for stone in log:
-            focus_area[int(stone.y) - upper_end, int(stone.x) - left_end] = 1 if stone.color == "b" else -1
-        print(focus_area)
+            normalize_row_index = int(stone.y) - upper_end
+            normalize_column_index = int(stone.x) - left_end
+            focus_area[normalize_row_index, normalize_column_index] = 1 if stone.color == "b" else -1
 
         horizontal = self.find_connection(focus_area, "h", left_end, upper_end)
         vertical = self.find_connection(focus_area, "v", left_end, upper_end)
@@ -50,14 +54,14 @@ class AlexBot:
         max_stone = max([self.stone_sum(candidate) for candidate in candidates])
         if max_stone >= self.k:
             return Stone("1", "1", turn)
-        print(max_stone)
-
-        for item in candidates:
-            print(item)
-
-        max_stone_candidate = choice([candidate for candidate in candidates if self.stone_sum(candidate) == max_stone])
-
-        window_index = choice([i for i, x in enumerate(max_stone_candidate.pattern) if x == 0])
+        max_stone_candidates = [candidate for candidate in candidates if self.stone_sum(candidate) == max_stone]
+        max_stone_candidate = choice(max_stone_candidates)
+        window_index = (
+            sorted(
+                [i for i, x in enumerate(max_stone_candidate.pattern) if x == 0],
+                key=lambda x: abs(x - self.k / 2),
+            )[0]
+        )
         position = max_stone_candidate.position[window_index]
 
         return Stone(str(position[0]), str(position[1]), turn)
@@ -77,7 +81,7 @@ class AlexBot:
                     window = (
                         Window(
                             pattern=focus_area[row, column:(column + self.k)],
-                            position=[(row + upper_end, column + left_end + i) for i in range(self.k)],
+                            position=[(column + left_end + i, row + upper_end) for i in range(self.k)],
                         )
                     )
                     connections, max_stone = self.check_window(window, connections, max_stone)
@@ -89,7 +93,7 @@ class AlexBot:
                     window = (
                         Window(
                             pattern=focus_area[row:(row + self.k), column],
-                            position=[(row + upper_end + i, column + left_end) for i in range(self.k)],
+                            position=[(column + left_end, row + upper_end + i) for i in range(self.k)],
                         )
                     )
                     connections, max_stone = self.check_window(window, connections, max_stone)
@@ -101,7 +105,7 @@ class AlexBot:
                     window = (
                         Window(
                             pattern=focus_area[row:(row + self.k), column:(column + self.k)].diagonal(),
-                            position=[(row + upper_end + i, column + left_end + i) for i in range(self.k)],
+                            position=[(column + left_end + i, row + upper_end + i) for i in range(self.k)],
                         )
                     )
                     connections, max_stone = self.check_window(window, connections, max_stone)
@@ -113,7 +117,7 @@ class AlexBot:
                     window = (
                         Window(
                             pattern=np.fliplr(focus_area[row:(row + self.k), column:(column + self.k)]).diagonal(),
-                            position=[(row + upper_end + i, column + left_end + self.k - 1 - i) for i in range(self.k)],
+                            position=[(column + left_end + self.k - 1 - i, row + upper_end + i) for i in range(self.k)],
                         )
                     )
                     connections, max_stone = self.check_window(window, connections, max_stone)
@@ -182,5 +186,4 @@ if __name__ == "__main__":
         Stone("7", "5", "w"),
     ]
     alex_bot = AlexBot()
-    # print("\t--basic bot: ", bot.alex_bot(test_log))
     print("\t--basic bot: ", alex_bot.put_stone(diagonal_test_log))
