@@ -50,7 +50,7 @@ class Referee:
     def tie_check(has_winner: bool, log: List[Stone], board_config: BoardConfig) -> bool:
         if has_winner:
             return False
-        if len(log) is not board_config.column * board_config.row:
+        if len(log) != board_config.column * board_config.row:
             return False
         return True
 

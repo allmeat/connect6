@@ -50,6 +50,10 @@ class AlexBot:
         negative_diagonal = self.find_connection(focus_area, "nd", left_end, upper_end)
         positive_diagonal = self.find_connection(focus_area, "pd", left_end, upper_end)
         candidates = horizontal + vertical + negative_diagonal + positive_diagonal
+        if len(candidates) == 0:
+            print("expect tie")
+            random_empty_spot = choice(self.empty_spots(log))
+            return Stone(random_empty_spot.x, random_empty_spot.y, turn)
 
         max_stone = max([self.stone_sum(candidate) for candidate in candidates])
         if max_stone >= self.k:
@@ -77,7 +81,7 @@ class AlexBot:
 
         if direction == "h" or direction == "horizontal":
             for row in range(focus_area.shape[0]):
-                for column in range(focus_area.shape[1]):
+                for column in range(focus_area.shape[1] - self.k + 1):
                     window = (
                         Window(
                             pattern=focus_area[row, column:(column + self.k)],
@@ -89,7 +93,7 @@ class AlexBot:
 
         if direction == "v" or direction == "vertical":
             for column in range(focus_area.shape[1]):
-                for row in range(focus_area.shape[0]):
+                for row in range(focus_area.shape[0] - self.k + 1):
                     window = (
                         Window(
                             pattern=focus_area[row:(row + self.k), column],
@@ -145,6 +149,16 @@ class AlexBot:
     @staticmethod
     def stone_sum(window: Window) -> int:
         return abs(sum(window.pattern))
+
+    def empty_spots(self, log: List[Stone]) -> List[Stone]:
+        full_area = np.zeros((self.n, self.m), dtype=int)
+        for item in log:
+            full_area[int(item.y) - 1, int(item.x) - 1] = 1
+        empty_spot_index = np.where(full_area == 0)
+        empty_spot_list = []
+        for coordinate in list(zip(empty_spot_index[0], empty_spot_index[1])):
+            empty_spot_list.append(Stone(str(coordinate[1] + 1), str(coordinate[0] + 1), "empty"))
+        return empty_spot_list
 
 
 if __name__ == "__main__":
