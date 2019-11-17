@@ -37,7 +37,7 @@ def play():
     if regex_color.match(color) is None:
         return {"code": 400, "message": "illegal input in stone"}, 400
 
-    if color is not referee.turn_check(board.log):
+    if color != referee.turn_check(board.log):
         board.print_illegal_turn()
         board.save_figure()
         return render_template("board.html")
