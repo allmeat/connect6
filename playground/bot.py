@@ -1,7 +1,7 @@
-from random import randint
 from typing import List
-
+from random import randint, choice
 from board import Stone
+from tei_bot import TeiBot
 from strategic_bot import get_scheme
 
 
@@ -15,14 +15,46 @@ class Bot:
         y = randint(1, 19)
         return Stone(str(x), str(y), self.color)
 
-    def linear_bot(self, log: List[Stone]) -> Stone:
+    def linear_bot(self) -> Stone:
         return Stone(str(10), str(10), self.color)
 
     def strategic_bot(self, log: List[Stone]) -> Stone:
         return get_scheme(self.color, log)
+
+    def tei_bot(self, log: List[Stone]) -> Stone:
+        if len(log) == 0:
+            x = choice(range(1, 20))
+            y = choice(range(1, 20))
+            position = Stone(str(x), str(y), self.color)
+        else:
+            possible_position = TeiBot(log).suggest_positions()
+            position = choice(possible_position)
+            position.color = self.color
+        return position
 
 
 if __name__ == "__main__":
     bot = Bot("w")
     print("--random bot")
     print("\t--white random stone: ", bot.random_bot())
+
+    diagonal_test_log = [
+        Stone("1", "2", "b"),
+        Stone("1", "1", "w"),
+        Stone("2", "2", "w"),
+        Stone("1", "3", "b"),
+        Stone("1", "4", "b"),
+        Stone("3", "3", "w"),
+        Stone("4", "4", "w"),
+        Stone("1", "5", "b"),
+        Stone("1", "6", "b"),
+        Stone("5", "5", "w"),
+        Stone("6", "5", "w"),
+        Stone("10", "11", "b"),
+        Stone("11", "11", "b"),
+        Stone("6", "6", "w"),
+    ]
+
+    print(TeiBot(diagonal_test_log).suggest_position())
+    print(bot.tei_bot(diagonal_test_log))
+    print(bot.tei_bot([]))
