@@ -21,11 +21,12 @@ class BoardConfig:
 class Board:
 
     def __init__(self,
-                 m: int = 19,
-                 n: int = 19,
-                 k: int = 6,
-                 p: int = 2,
-                 q: int = 1):
+                 m: int = 19,  # number of row on board
+                 n: int = 19,  # number of column on board
+                 k: int = 6,  # number of stones in a row for winning
+                 p: int = 2,  # number of stones for each move
+                 q: int = 1,  # number of stones for first move
+                 ):
         self.config = BoardConfig(m, n, k, p, q)
         self.output_path = "templates/board.html"
         output_file(self.output_path)
