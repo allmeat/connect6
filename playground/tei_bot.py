@@ -2,7 +2,7 @@ import numpy as np
 from random import randint, choice
 from typing import List
 from board import Stone, BoardConfig
-import util
+from util import turn_check, Direction
 
 
 class TeiBot:
@@ -58,24 +58,24 @@ class TeiBot:
         x = int(stone.x)
         y = int(stone.y)
 
-        if direction == "l":
+        if direction == Direction.LEFT:
             x = x - stride
-        elif direction == "r":
+        elif direction == Direction.RIGHT:
             x = x + stride
-        elif direction == "u":
+        elif direction == Direction.UP:
             y = y - stride
-        elif direction == "d":
+        elif direction == Direction.DOWN:
             y = y + stride
-        elif direction == "ul":
+        elif direction == Direction.UP_LEFT:
             y = y - stride
             x = x - stride
-        elif direction == "ur":
+        elif direction == Direction.UP_RIGHT:
             y = y - stride
             x = x + stride
-        elif direction == "dl":
+        elif direction == Direction.DOWN_LEFT:
             y = y + stride
             x = x - stride
-        else:  # direction == "dr":
+        else:  # direction == Direction.DOWN_RIGHT:
             y = y + stride
             x = x + stride
         return Stone(str(x), str(y), stone.color)
@@ -88,7 +88,7 @@ class TeiBot:
 
     def suggest_positions(self, log: List[Stone], lower: int = 1, upper: int = 19) -> List[Stone]:
         suggestions = []
-        for d in ["r", "l", "u", "d", "ul", "ur", "dl", "dr"]:
+        for d in Direction.ALL_DIRECTIONS:
             position = list(map(lambda x: self.move_stone(x, d, 1), log))
             position = list(filter(lambda x: lower <= int(x.x) <= upper and lower <= int(x.y) <= upper, position))
             suggestions = suggestions + position
@@ -103,7 +103,7 @@ class TeiBot:
         return suggestions
 
     def put_stone(self, log: List[Stone]) -> Stone:
-        turn = util.turn_check(log, self.p, self.q)
+        turn = turn_check(log, self.p, self.q)
         if len(log) == 0:
             x = randint(1, self.n)
             y = randint(1, self.m)

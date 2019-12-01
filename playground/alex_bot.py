@@ -3,7 +3,7 @@ from random import choice
 from dataclasses import dataclass
 from typing import List, Tuple
 from board import Stone, BoardConfig
-import util
+from util import turn_check, Direction
 
 
 @dataclass
@@ -22,7 +22,7 @@ class AlexBot:
         self.q = board_config.first_move
 
     def put_stone(self, log: List[Stone]) -> Stone:
-        turn = util.turn_check(log, self.p, self.q)
+        turn = turn_check(log, self.p, self.q)
         if len(log) == 0:
             return Stone(str(10), str(10), turn)
 
@@ -48,10 +48,10 @@ class AlexBot:
             normalize_column_index = int(stone.x) - left_end
             focus_area[normalize_row_index, normalize_column_index] = 1 if stone.color == "b" else -1
 
-        horizontal = self.find_connection(focus_area, "h", left_end, upper_end)
-        vertical = self.find_connection(focus_area, "v", left_end, upper_end)
-        negative_diagonal = self.find_connection(focus_area, "nd", left_end, upper_end)
-        positive_diagonal = self.find_connection(focus_area, "pd", left_end, upper_end)
+        horizontal = self.find_connection(focus_area, Direction.HORIZONTAL, left_end, upper_end)
+        vertical = self.find_connection(focus_area, Direction.VERTICAL, left_end, upper_end)
+        negative_diagonal = self.find_connection(focus_area, Direction.NEGATIVE_DIAGONAL, left_end, upper_end)
+        positive_diagonal = self.find_connection(focus_area, Direction.POSITIVE_DIAGONAL, left_end, upper_end)
         candidates = horizontal + vertical + negative_diagonal + positive_diagonal
         if len(candidates) == 0:
             print("expect tie")
@@ -82,7 +82,7 @@ class AlexBot:
         connections = []
         max_stone = 0
 
-        if direction == "h" or direction == "horizontal":
+        if direction == Direction.HORIZONTAL:
             for row in range(focus_area.shape[0]):
                 for column in range(focus_area.shape[1] - self.k + 1):
                     window = (
@@ -94,7 +94,7 @@ class AlexBot:
                     connections, max_stone = self.check_window(window, connections, max_stone)
             return connections
 
-        if direction == "v" or direction == "vertical":
+        if direction == Direction.VERTICAL:
             for column in range(focus_area.shape[1]):
                 for row in range(focus_area.shape[0] - self.k + 1):
                     window = (
@@ -106,7 +106,7 @@ class AlexBot:
                     connections, max_stone = self.check_window(window, connections, max_stone)
             return connections
 
-        if direction == "nd" or direction == "negative_diagonal":
+        if direction == Direction.NEGATIVE_DIAGONAL:
             for row in range(focus_area.shape[0] - self.k + 1):
                 for column in range(focus_area.shape[1] - self.k + 1):
                     window = (
@@ -118,7 +118,7 @@ class AlexBot:
                     connections, max_stone = self.check_window(window, connections, max_stone)
             return connections
 
-        if direction == "pd" or direction == "positive_diagonal":
+        if direction == Direction.POSITIVE_DIAGONAL:
             for row in range(focus_area.shape[0] - self.k + 1):
                 for column in range(focus_area.shape[1] - self.k + 1):
                     window = (
