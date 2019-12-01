@@ -9,8 +9,8 @@ class Bot:
 
     def __init__(self, board_config: BoardConfig):
         self.config = board_config
-        self.tei = TeiBot()
-        self.alex = AlexBot(board_config)
+        self.tei = TeiBot(self.config)
+        self.alex = AlexBot(self.config)
 
     def random_bot(self, color: str) -> Stone:
         x = randint(1, self.config.column)

@@ -1,10 +1,18 @@
 import numpy as np
 from random import randint, choice
 from typing import List
-from board import Stone
+from board import Stone, BoardConfig
+import util
 
 
 class TeiBot:
+
+    def __init__(self, board_config: BoardConfig):
+        self.k = board_config.connect
+        self.m = board_config.row
+        self.n = board_config.column
+        self.p = board_config.each_move
+        self.q = board_config.first_move
 
     @staticmethod
     def array_to_board(x: int) -> str:
@@ -95,10 +103,10 @@ class TeiBot:
         return suggestions
 
     def put_stone(self, log: List[Stone]) -> Stone:
-        turn = "b" if (len(log) + 1) % 4 in [0, 1] else "w"
+        turn = util.turn_check(log, self.p, self.q)
         if len(log) == 0:
-            x = randint(1, 19)
-            y = randint(1, 19)
+            x = randint(1, self.n)
+            y = randint(1, self.m)
             return Stone(str(x), str(y), turn)
         position = choice(self.suggest_positions(log))
         return Stone(position.x, position.y, turn)
