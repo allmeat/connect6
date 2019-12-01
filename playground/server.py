@@ -4,6 +4,7 @@ import json
 from flask import Flask, render_template, request
 from board import Board, Stone
 from referee import Referee
+import util
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
@@ -37,7 +38,7 @@ def play():
     if regex_color.match(color) is None:
         return {"code": 400, "message": "illegal input in stone"}, 400
 
-    if color != referee.turn_check(board.log):
+    if color != util.turn_check(board.log, board.config.each_move, board.config.first_move):
         board.print_illegal_turn()
         board.save_figure()
         return render_template("board.html")

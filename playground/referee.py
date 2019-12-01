@@ -31,12 +31,6 @@ class Referee:
         empty_position = [new_stone.x, new_stone.y] not in positions
         return x_valid_range and y_valid_range and empty_position
 
-    @staticmethod
-    def turn_check(log: List[Stone]) -> str:
-        if (len(log) + 1) % 4 in [0, 1]:
-            return "b"
-        return "w"
-
     def end_check(self, log: List[Stone], board_config: BoardConfig) -> EndCheck:
         is_win = self.connection_check(log, board_config.connect)
         if is_win:
@@ -217,9 +211,6 @@ if __name__ == "__main__":
     print("--valid_check")
     print("\t--True (valid stone input): ", referee.valid_check(Stone("10", "10", "b"), test_log))
     print("\t--False (invalid stone input):", referee.valid_check(Stone("1", "1", "w"), test_log))
-    print("--turn_check")
-    print("\t--w (white turn): ", referee.turn_check(test_log[:-1]))
-    print("\t--b (black turn): ", referee.turn_check(test_log))
     print("--end_check")
     print("\t--end = False, tie = False (not end): ", referee.end_check(test_log[:-1], test_board_config))
     print("\t--end = True, tie = False (horizontal win): ", referee.end_check(horizontal_test_log, test_board_config))

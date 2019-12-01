@@ -4,6 +4,7 @@ from random import random
 from board import Board, Stone
 from referee import Referee
 from bot import Bot
+import util
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
@@ -14,7 +15,7 @@ class House:
     def __init__(self, first_player_first_move: bool):
         self.board = Board()
         self.referee = Referee()
-        self.bot = Bot()
+        self.bot = Bot(self.board.config)
         self.first_player_first_move = first_player_first_move
 
     @staticmethod
@@ -25,7 +26,7 @@ class House:
 
     def play(self, render_every: bool = True):
         while True:
-            turn = self.referee.turn_check(self.board.log)
+            turn = util.turn_check(self.board.log, self.board.config.each_move, self.board.config.first_move)
             if self.first_player_first_move == (turn == "b"):
                 order = "player"
                 stone = self.player_input(turn)
@@ -52,13 +53,13 @@ class House:
 
     def simulate(self, render_every: bool = False, pause: float = 1.0):
         while True:
-            turn = self.referee.turn_check(self.board.log)
+            turn = util.turn_check(self.board.log, self.board.config.each_move, self.board.config.first_move)
             if self.first_player_first_move == (turn == "b"):
                 order = "tei"
-                stone = Bot().tei_bot(self.board.log)
+                stone = self.bot.tei_bot(self.board.log)
             else:
                 order = "alex"
-                stone = Bot().alex_bot(self.board.log)
+                stone = self.bot.alex_bot(self.board.log)
 
             if not self.referee.valid_check(stone, self.board.log):
                 print("invalid")
