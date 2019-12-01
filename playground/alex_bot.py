@@ -14,9 +14,9 @@ class Window:
 class AlexBot:
 
     def __init__(self, k: int = 6, m: int = 19, n: int = 19):
-        self.k = k
-        self.m = m
-        self.n = n
+        self.k = k  # number of stones in a row for winning
+        self.m = m  # number of row on board
+        self.n = n  # number of column on board
 
     def put_stone(self, log: List[Stone]) -> Stone:
         turn = "b" if (len(log) + 1) % 4 in [0, 1] else "w"
