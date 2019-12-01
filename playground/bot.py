@@ -1,20 +1,20 @@
 from typing import List
 from random import randint
-from board import Stone
+from board import Stone, BoardConfig
 from tei_bot import TeiBot
 from alex_bot import AlexBot
 
 
 class Bot:
 
-    def __init__(self):
+    def __init__(self, board_config: BoardConfig):
+        self.config = board_config
         self.tei = TeiBot()
-        self.alex = AlexBot()
+        self.alex = AlexBot(board_config)
 
-    @staticmethod
-    def random_bot(color: str) -> Stone:
-        x = randint(1, 19)
-        y = randint(1, 19)
+    def random_bot(self, color: str) -> Stone:
+        x = randint(1, self.config.column)
+        y = randint(1, self.config.row)
         return Stone(str(x), str(y), color)
 
     def tei_bot(self, log: List[Stone]) -> Stone:

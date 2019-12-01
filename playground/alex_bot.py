@@ -2,7 +2,8 @@ import numpy as np
 from random import choice
 from dataclasses import dataclass
 from typing import List, Tuple
-from board import Stone
+from board import Stone, BoardConfig
+import util
 
 
 @dataclass
@@ -13,13 +14,15 @@ class Window:
 
 class AlexBot:
 
-    def __init__(self, k: int = 6, m: int = 19, n: int = 19):
-        self.k = k  # number of stones in a row for winning
-        self.m = m  # number of row on board
-        self.n = n  # number of column on board
+    def __init__(self, board_config: BoardConfig):
+        self.k = board_config.connect
+        self.m = board_config.row
+        self.n = board_config.column
+        self.p = board_config.each_move
+        self.q = board_config.first_move
 
     def put_stone(self, log: List[Stone]) -> Stone:
-        turn = "b" if (len(log) + 1) % 4 in [0, 1] else "w"
+        turn = util.turn_check(log, self.p, self.q)
         if len(log) == 0:
             return Stone(str(10), str(10), turn)
 
@@ -199,7 +202,8 @@ if __name__ == "__main__":
         Stone("7", "5", "w"),
     ]
 
-    alex_bot = AlexBot()
+    config = BoardConfig(19, 19, 6, 2, 1)
+    alex_bot = AlexBot(config)
     print("--Alex bot")
     print("\t--x = 2, y = 6, color = w (vertical test): ", alex_bot.put_stone(vertical_test_log))
     print("\t--x = 6, y = 6, color = w (diagonal test): ", alex_bot.put_stone(diagonal_test_log))
