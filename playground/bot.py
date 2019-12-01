@@ -25,7 +25,8 @@ class Bot:
 
 
 if __name__ == "__main__":
-    bot = Bot()
+    config = BoardConfig(19, 19, 6, 2, 1)
+    bot = Bot(config)
     test_log = [
         Stone("1", "2", "b"),
         Stone("1", "1", "w"),

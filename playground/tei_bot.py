@@ -130,7 +130,8 @@ if __name__ == "__main__":
         Stone("6", "6", "w"),
     ]
 
-    tei_bot = TeiBot()
+    config = BoardConfig(19, 19, 6, 2, 1)
+    tei_bot = TeiBot(config)
     tei_bot.draw_board(diagonal_test_log)
 
     suggest_positions = tei_bot.suggest_positions(diagonal_test_log)
