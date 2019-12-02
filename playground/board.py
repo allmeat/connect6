@@ -21,11 +21,12 @@ class BoardConfig:
 class Board:
 
     def __init__(self,
-                 m: int = 19,
-                 n: int = 19,
-                 k: int = 6,
-                 p: int = 2,
-                 q: int = 1):
+                 m: int = 19,  # number of row on board
+                 n: int = 19,  # number of column on board
+                 k: int = 6,  # number of stones in a row for winning
+                 p: int = 2,  # number of stones for each move
+                 q: int = 1,  # number of stones for first move
+                 ):
         self.config = BoardConfig(m, n, k, p, q)
         self.output_path = "templates/board.html"
         output_file(self.output_path)
@@ -99,10 +100,33 @@ class Board:
 
 
 if __name__ == "__main__":
+    test_log = [
+        Stone("3", "2", "b"),
+        Stone("2", "1", "w"),
+        Stone("2", "2", "w"),
+        Stone("1", "2", "b"),
+        Stone("1", "3", "b"),
+        Stone("2", "3", "w"),
+        Stone("2", "4", "w"),
+        Stone("1", "4", "b"),
+        Stone("1", "5", "b"),
+        Stone("2", "5", "w"),
+        Stone("2", "8", "w"),
+        Stone("1", "10", "b"),
+        Stone("1", "11", "b"),
+        Stone("2", "9", "w"),
+        Stone("2", "6", "w"),
+    ]
+
     board = Board()
     print("--render board")
     board.render_figure()
-    print("--put stone")
-    board.put_stone(Stone("10", "10", "b"))
-    print("\t--log: ", board.log)
+
+    print("--put stones")
+    for item in test_log:
+        board.put_stone(item)
     board.render_figure()
+
+    print("--log ")
+    for item in board.log:
+        print("\t", item)
