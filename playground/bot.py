@@ -3,6 +3,7 @@ from random import randint
 from board import Stone, BoardConfig
 from tei_bot import TeiBot
 from alex_bot import AlexBot
+from strategic_bot import StrategicBot
 
 
 class Bot:
@@ -11,6 +12,7 @@ class Bot:
         self.config = board_config
         self.tei = TeiBot(self.config)
         self.alex = AlexBot(self.config)
+        self.strategic = StrategicBot(self.config)
 
     def random_bot(self, color: str) -> Stone:
         x = randint(1, self.config.column)
@@ -22,6 +24,9 @@ class Bot:
 
     def alex_bot(self, log: List[Stone]) -> Stone:
         return self.alex.put_stone(log)
+
+    def strategic_bot(self, log: List[Stone]) -> Stone:
+        return self.strategic.put_stone(log)
 
 
 if __name__ == "__main__":
@@ -51,3 +56,6 @@ if __name__ == "__main__":
 
     print("--Alex bot")
     print("\t--white Alex bot stone: ", bot.alex_bot(test_log))
+
+    print("--Strategic bot")
+    print("\t--white Strategic bot stone: ", bot.strategic_bot(test_log))
