@@ -30,8 +30,8 @@ class StrategicBot:
         # TODO: direction functions to be generalized to util (on the next phase)
         self.directions = {
             Direction.RIGHT: lambda x, y: (x + 1, y),
-            Direction.DOWN: lambda x, y: (x, y - 1),
-            Direction.DOWN_RIGHT: lambda x, y: (x + 1, y - 1),
+            Direction.DOWN: lambda x, y: (x, y + 1),
+            Direction.DOWN_RIGHT: lambda x, y: (x + 1, y + 1),
         }
 
     # TODO: to be generalized to util (on the next phase)
@@ -39,11 +39,12 @@ class StrategicBot:
         is_connected = False
         for _, direction in self.directions.items():
             connection_count = 1
-            new_x, new_y = direction(edge.x, edge.y)
-            if Stone(new_x, new_y, edge.color) in log:
+            new_x, new_y = direction(int(edge.x), int(edge.y))
+            if Stone(str(new_x), str(new_y), edge.color) in log:
                 connection_count += 1
             if connection_count == num:
                 is_connected = True
+                break
         return is_connected
 
     def group_by_connected(self, log: List[Stone], color: str) -> Dict[int, List[Stone]]:
