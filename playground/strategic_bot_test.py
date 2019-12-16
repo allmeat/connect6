@@ -1,6 +1,7 @@
 import unittest
 
-from strategic_bot import *
+from strategic_bot import is_edge, StrategicBot
+from board import BoardConfig, Stone
 
 
 class MyTest(unittest.TestCase):
