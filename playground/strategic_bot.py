@@ -1,6 +1,7 @@
 from collections import defaultdict
 from operator import itemgetter
 from typing import List, Dict
+from random import randint, choice
 
 from board import Stone, BoardConfig
 from util import turn_check, Direction
@@ -48,7 +49,7 @@ class StrategicBot:
         return is_connected
 
     def group_by_connected(self, log: List[Stone], color: str) -> Dict[int, List[Stone]]:
-        groups = defaultdict(List[Stone])
+        groups = defaultdict(list)
         filtered_log = [s for s in log if s.color == color and is_edge(s, log)]
         # returns connected that are not closed
         for edge in filtered_log:
@@ -65,30 +66,41 @@ class StrategicBot:
         else:
             opponent_color = "W"
         mine = self.group_by_connected(log, turn)
+        mine_keys = mine.keys()
+        if len(mine_keys) == 0:
+            x = randint(1, self.n)
+            y = randint(1, self.m)
+            return Stone(str(x), str(y), turn)
+        mine_max_key = max(mine_keys)
         opponent = self.group_by_connected(log, opponent_color)
-        opponent_max = max(opponent.items(), key=itemgetter[0])
-        if opponent_max > 4:
+        opponent_keys = opponent.keys()
+        if len(opponent_keys) == 0:
+            s = self.optimal_stone(mine_max_key, mine)
+            s.color = turn
+            return s
+        opponent_max_key = max(opponent_keys)
+        if opponent_max_key > 4:
             # mode defense
-            s = self.optimal_stone(opponent)
+            s = self.optimal_stone(opponent_max_key, opponent)
         else:
             # mode offense
-            s = self.optimal_stone(mine)
+            s = self.optimal_stone(mine_max_key, mine)
         s.color = turn
         return s
 
     @staticmethod
-    def optimal_stone(possibles: Dict[int, List[Stone]]) -> Stone:
-        maximum_possible = max(possibles.items(), key=itemgetter[0])
-        if len(possibles[maximum_possible]) != 1:
+    def optimal_stone(max_key: int, possibles: Dict[int, List[Stone]]) -> Stone:
+        maximum_possible = possibles[max_key]
+        if len(maximum_possible) != 1:
             counts = defaultdict(int)
-            for num in list(range(maximum_possible, 1, -1)):
-                for pos in possibles[maximum_possible]:
+            for num in list(range(len(maximum_possible), 1, -1)):
+                for pos in maximum_possible:
                     if pos in possibles[num]:
                         counts[pos] += 1
                 count_desc = sorted(counts.items(), key=itemgetter(1))
                 if count_desc[0] != count_desc[1]:
                     return count_desc[0]
-        return possibles[maximum_possible][0]
+        return maximum_possible[0]
 
 
 if __name__ == "__main__":
