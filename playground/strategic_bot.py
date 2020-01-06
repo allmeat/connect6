@@ -85,7 +85,6 @@ class StrategicBot:
 			is_edge, directions = is_stone_edge(s, log)
 			if s.color == color and is_edge:
 				edges[(s.x, s.y, s.color)] = directions
-		print(edges)
 		# returns connected that are not closed
 		for edge_, dirs in edges.items():
 			edge = Stone(edge_[0], edge_[1], edge_[2])
