@@ -5,6 +5,8 @@
 + bokeh == 1.3.4
 + flask == 1.1.1
 
+We strongly recommend to use MacOSX.
+
 ## installation
 + `pip install -r requirements.txt
 
