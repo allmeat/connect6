@@ -3,7 +3,7 @@ from random import randint, choice
 from typing import List
 from board import Stone, BoardConfig
 from util import turn_check, Direction
-
+from util import BoardInterpreter
 
 class TeiBot:
 
@@ -13,7 +13,23 @@ class TeiBot:
         self.n = board_config.column
         self.p = board_config.each_move
         self.q = board_config.first_move
+        self.boardInterpreter = BoardInterpreter(board_config)
 
+
+    #array_to_board = lambda self, x: self.boardInterpreter.array_to_board(x)
+
+    def array_to_board(self, x: int) -> str:
+        return self.boardInterpreter.array_to_board(x)
+
+    def stone_to_array(self, log: List[Stone]) -> np.array:
+        return self.boardInterpreter.stone_to_array(log)
+
+    def array_to_stone(self, stone_array: np.array, color: str) -> List[Stone]:
+        return self.boardInterpreter.array_to_stone(stone_array, color)
+
+    def draw_board(self, log: List[Stone]):
+        self.boardInterpreter.draw_board(log)
+    '''
     @staticmethod
     def array_to_board(x: int) -> str:
         if x == 0:
@@ -52,6 +68,15 @@ class TeiBot:
         positions = list(zip(list(x), list(y)))
         stones = [Stone(str(x + 1), str(y + 1), color) for x, y in positions]
         return stones
+    '''
+    '''
+    def draw_board(self, log: List[Stone]):
+        stone_array = self.stone_to_array(log)
+        join_column = list(map(lambda y: " ".join([self.array_to_board(x) for i, x in enumerate(y)]), stone_array))
+        join_row = "\n" + "\n".join(join_column)
+        print(join_row)
+    '''
+
 
     @staticmethod
     def move_stone(stone: Stone, direction: str, stride: int = 1) -> Stone:
@@ -79,12 +104,6 @@ class TeiBot:
             y = y + stride
             x = x + stride
         return Stone(str(x), str(y), stone.color)
-
-    def draw_board(self, log: List[Stone]):
-        stone_array = self.stone_to_array(log)
-        join_column = list(map(lambda y: " ".join([self.array_to_board(x) for i, x in enumerate(y)]), stone_array))
-        join_row = "\n" + "\n".join(join_column)
-        print(join_row)
 
     def suggest_positions(self, log: List[Stone], lower: int = 1, upper: int = 19) -> List[Stone]:
         suggestions = []
