@@ -114,19 +114,32 @@ class StrategicBot:
 		opponent_max_key = max(opponent_keys)
 		if opponent_max_key > 4:
 			# mode defense
-			s = self.optimal_stone(opponent)
+			s = self.optimal_stone(opponent, log)
 		else:
 			# mode offense
-			s = self.optimal_stone(mine)
+			s = self.optimal_stone(mine, log)
 		s.color = turn
 		return s
 
-	def optimal_stone(self, possibles: Dict[int, List[Edge]]) -> Stone:
+	def filter_valid(self, corners: List[Stone], log: List[Stone]):
+		for corner in corners:
+			if int(corner.x) > self.m or int(corner.y) > self.n:
+				corners.remove(corner)
+			for stone in log:
+				if stone.x == corner.x and stone.y == corner.y:
+					corners.remove(corner)
+		return corners
+
+	def optimal_stone(self, possibles: Dict[int, List[Edge]], log: List[Stone]) -> Stone:
 		sorted_keys = sorted(possibles.keys())
 		for k in sorted_keys:
-			corners = self.get_corners(k, possibles[k])
+			candidates = self.get_corners(k, possibles[k])
+			corners = self.filter_valid(candidates, log)
 			if len(corners) > 0:
 				return choice(corners)
+		x = randint(1, self.n)
+		y = randint(1, self.m)
+		return Stone(str(x), str(y), possibles[0][0].stone.color)
 
 	def get_corners(self, num: int, edges: List[Edge]) -> List[Stone]:
 		corners = []
