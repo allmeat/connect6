@@ -79,8 +79,11 @@ class StrategicBotTest(unittest.TestCase):
 		self.assertTrue(self.sb.connection_check(diag_edges[1], self.diagonal_test_log, 5))
 
 	def test_group_by_connected(self):
-		result = self.sb.group_by_connected(self.test_log, "b")
-		self.assertEqual(len(result[2]), 1)
+		result = self.sb.group_by_connected(self.vertical_test_log, "b")
+		self.assertEqual(len(result), 3)
+
+		result = self.sb.group_by_connected(self.diagonal_test_log, "b")
+		self.assertEqual(len(result), 3)
 
 
 if __name__ == '__main__':
