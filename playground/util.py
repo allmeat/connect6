@@ -9,7 +9,7 @@ def turn_check(log: List[Stone], each_move: int, first_move: int) -> str:
     return "b"
 
 
-def exit_by_alias(_: List[Stone]):
+def exit_by_alias(_: List[Stone]) -> None:
     print("wrong player name")
     os.sys.exit()
 
