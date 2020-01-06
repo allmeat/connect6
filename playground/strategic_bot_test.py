@@ -1,6 +1,6 @@
 import unittest
 
-from strategic_bot import is_stone_edge, StrategicBot
+from strategic_bot import StrategicBot, Edge
 from board import BoardConfig, Stone
 
 
@@ -44,46 +44,71 @@ class StrategicBotTest(unittest.TestCase):
 			Stone("5", "10", "b"),
 			Stone("7", "5", "w"),
 		]
-		self.test_log = [
-			Stone("3", "2", "b"),
-			Stone("2", "1", "w"),
-			Stone("2", "2", "w"),
-			Stone("1", "2", "b"),
-			Stone("1", "3", "b"),
-		]
 		self.sb = StrategicBot(self.test_config)
 
 	def test_is_edge(self):
-		self.assertTrue(is_stone_edge(self.vertical_test_log[0], self.vertical_test_log))
-		self.assertTrue(is_stone_edge(self.vertical_test_log[1], self.vertical_test_log))
-		self.assertFalse(is_stone_edge(self.vertical_test_log[2], self.vertical_test_log))
-		self.assertTrue(is_stone_edge(self.vertical_test_log[3], self.vertical_test_log))
-		self.assertFalse(is_stone_edge(self.vertical_test_log[4], self.vertical_test_log))
+		(e0, d0) = self.sb.is_stone_edge(self.vertical_test_log[0], self.vertical_test_log)
+		self.assertFalse(e0)
+		self.assertEqual(len(d0), 0)
+		(e1, d1) = self.sb.is_stone_edge(self.vertical_test_log[1], self.vertical_test_log)
+		self.assertTrue(e1)
+		self.assertEqual(len(d1), 1)
+		(e2, _) = self.sb.is_stone_edge(self.vertical_test_log[2], self.vertical_test_log)
+		self.assertFalse(e2)
+		(e3, d3) = self.sb.is_stone_edge(self.vertical_test_log[3], self.vertical_test_log)
+		self.assertTrue(e1)
+		self.assertEqual(len(d3), 1)
 
-		self.assertTrue(is_stone_edge(self.diagonal_test_log[0], self.diagonal_test_log))
-		self.assertTrue(is_stone_edge(self.diagonal_test_log[1], self.diagonal_test_log))
-		self.assertFalse(is_stone_edge(self.diagonal_test_log[2], self.diagonal_test_log))
-		self.assertFalse(is_stone_edge(self.diagonal_test_log[3], self.diagonal_test_log))
-		self.assertFalse(is_stone_edge(self.diagonal_test_log[4], self.diagonal_test_log))
+		(e0, d0) = self.sb.is_stone_edge(self.diagonal_test_log[0], self.diagonal_test_log)
+		self.assertTrue(e0)
+		self.assertEqual(len(d0), 1)
+		(e1, d1) = self.sb.is_stone_edge(self.diagonal_test_log[1], self.diagonal_test_log)
+		self.assertTrue(e1)
+		self.assertEqual(len(d1), 1)
+		(e2, _) = self.sb.is_stone_edge(self.diagonal_test_log[2], self.diagonal_test_log)
+		self.assertFalse(e2)
 
-		self.assertTrue(is_stone_edge(self.diagonal_test_log[15], self.diagonal_test_log))
+		edges = []
+		for s in self.vertical_test_log:
+			is_edge, dirs = self.sb.is_stone_edge(s, self.vertical_test_log)
+			if is_edge:
+				edges.append(s)
+		self.assertEqual(len(edges), 4)
+
+		edges = []
+		for s in self.diagonal_test_log:
+			is_edge, dirs = self.sb.is_stone_edge(s, self.diagonal_test_log)
+			if is_edge:
+				edges.append(s)
+		self.assertEqual(len(edges), 5)
 
 	def test_connection_check(self):
-		vert_edges = [self.vertical_test_log[0], self.vertical_test_log[1], self.vertical_test_log[3]]
-		self.assertTrue(self.sb.connection_check(vert_edges[0], self.vertical_test_log, 1))
-		self.assertTrue(self.sb.connection_check(vert_edges[1], self.vertical_test_log, 5))
-		self.assertTrue(self.sb.connection_check(vert_edges[2], self.vertical_test_log, 4))
+		vert_edges = []
+		for s in self.vertical_test_log:
+			is_edge, dirs = self.sb.is_stone_edge(s, self.vertical_test_log)
+			if is_edge:
+				vert_edges.append(Edge(s, dirs))
+		self.assertTrue(self.sb.connection_check(vert_edges[0], self.vertical_test_log, 5))
+		self.assertTrue(self.sb.connection_check(vert_edges[1], self.vertical_test_log, 4))
+		self.assertTrue(self.sb.connection_check(vert_edges[2], self.vertical_test_log, 2))
 
-		diag_edges = [self.diagonal_test_log[0], self.diagonal_test_log[1], self.diagonal_test_log[3]]
+		diag_edges = []
+		for s in self.diagonal_test_log:
+			is_edge, dirs = self.sb.is_stone_edge(s, self.diagonal_test_log)
+			if is_edge:
+				diag_edges.append(Edge(s, dirs))
 		self.assertTrue(self.sb.connection_check(diag_edges[0], self.diagonal_test_log, 4))
 		self.assertTrue(self.sb.connection_check(diag_edges[1], self.diagonal_test_log, 5))
 
 	def test_group_by_connected(self):
 		result = self.sb.group_by_connected(self.vertical_test_log, "b")
-		self.assertEqual(len(result), 3)
-
+		self.assertEqual(len(result), 2)
+		result = self.sb.group_by_connected(self.vertical_test_log, "w")
+		self.assertEqual(len(result), 2)
 		result = self.sb.group_by_connected(self.diagonal_test_log, "b")
-		self.assertEqual(len(result), 3)
+		self.assertEqual(len(result), 2)
+		result = self.sb.group_by_connected(self.diagonal_test_log, "w")
+		self.assertEqual(len(result), 2)
 
 
 if __name__ == '__main__':

@@ -89,4 +89,4 @@ if __name__ == "__main__":
 	coin_toss = True if random() > 0.5 else False
 	print("1p first: ", coin_toss)
 	house = House(first_player_first_move=coin_toss)
-	house.simulate("alex", "tei", render_every=False, pause=0.5)
+	house.simulate("alex", "jw", render_every=False, pause=0.5)

@@ -13,28 +13,6 @@ class Edge:
 	directions: List[str]
 
 
-# edge is left most or upper most stone in a connection: left has priority
-def is_stone_edge(s: Stone, log: List[Stone]) -> (bool, List[str]):
-	is_present = {
-		Direction.DOWN_RIGHT: Stone(str(int(s.x) - 1), str(int(s.y) - 1), s.color),
-		Direction.DOWN: Stone(s.x, str(int(s.y) - 1), s.color),
-		Direction.RIGHT: Stone(str(int(s.x) - 1), s.y, s.color),
-		Direction.UP_RIGHT: Stone(str(int(s.x) - 1), str(int(s.y) + 1), s.color)
-	}
-	direction = defaultdict(int)
-	for stone in log:
-		for dr, p in is_present.items():
-			direction[dr] = 1
-			if stone == p:
-				del direction[dr]
-				break
-	if len(direction) > 0:
-		is_edge = True
-	else:
-		is_edge = False
-	return is_edge, list(direction.keys())
-
-
 class StrategicBot:
 	def __init__(self, board_config: BoardConfig):
 		self.k = board_config.connect
@@ -42,7 +20,7 @@ class StrategicBot:
 		self.n = board_config.column
 		self.p = board_config.each_move
 		self.q = board_config.first_move
-		# TODO: direction functions to be generalized to util (on the next phase)
+
 		self.directions = {
 			Direction.RIGHT: lambda x, y: (x + 1, y),
 			Direction.DOWN: lambda x, y: (x, y + 1),
@@ -56,19 +34,43 @@ class StrategicBot:
 			Direction.UP_RIGHT: lambda x, y: (x - 1, y + 1)
 		}
 
+		self.opponent_color = ""
+		self.my_color = ""
+
+	# edge is left most or upper most stone in a connection size greater than 1: left has priority
+	def is_stone_edge(self, stone: Stone, log: List[Stone]) -> (bool, List[str]):
+		default_directions = [Direction.RIGHT, Direction.DOWN, Direction.DOWN_RIGHT, Direction.UP_RIGHT]
+		directions = []
+		for dd in default_directions:
+			counter_f = self.counter_directions[dd]
+			m_x, m_y = counter_f(int(stone.x), int(stone.y))
+			m_stone = Stone(str(m_x), str(m_y), stone.color)
+			if m_stone in log:
+				break
+			f = self.directions[dd]
+			m_x, m_y = f(int(stone.x), int(stone.y))
+			m_stone = Stone(str(m_x), str(m_y), stone.color)
+			if m_stone in log:
+				directions.append(dd)
+		if len(directions) > 0:
+			is_edge = True
+		else:
+			is_edge = False
+		return is_edge, directions
+
 	# TODO: to be generalized to util (on the next phase)
-	def connection_check(self, edge: Stone, log: List[Stone], num: int, dirs: List[str]):
+	def connection_check(self, edge: Edge, log: List[Stone], num: int):
 		is_connected = False
 		filtered_direction = {}
 		for direction_name, direction in self.directions.items():
-			if direction_name in dirs:
+			if direction_name in edge.directions:
 				filtered_direction[direction_name] = direction
 		for _, direction in filtered_direction.items():
 			connection_count = 1
-			new_x, new_y = (edge.x, edge.y)
+			new_x, new_y = (edge.stone.x, edge.stone.y)
 			while True:
 				new_x, new_y = direction(int(new_x), int(new_y))
-				new_stone = Stone(str(new_x), str(new_y), edge.color)
+				new_stone = Stone(str(new_x), str(new_y), edge.stone.color)
 				if new_stone in log:
 					connection_count += 1
 				else:
@@ -82,64 +84,75 @@ class StrategicBot:
 		groups = defaultdict(list)
 		edges = defaultdict(list)
 		for s in log:
-			is_edge, directions = is_stone_edge(s, log)
+			is_edge, directions = self.is_stone_edge(s, log)
 			if s.color == color and is_edge:
 				edges[(s.x, s.y, s.color)] = directions
 		# returns connected that are not closed
 		for edge_, dirs in edges.items():
-			edge = Stone(edge_[0], edge_[1], edge_[2])
-			for num in list(range(6, 0, -1)):
-				if self.connection_check(edge, log, num, dirs):
-					groups[num].append(Edge(edge, dirs))
+			edge = Edge(Stone(edge_[0], edge_[1], edge_[2]), dirs)
+			for num in list(range(6, 1, -1)):
+				if self.connection_check(edge, log, num):
+					groups[num].append(edge)
 					break
 		return groups
 
 	def put_stone(self, log: List[Stone]) -> Stone:
-		turn = turn_check(log, self.p, self.q)
-		if turn == "w":
-			opponent_color = "b"
+		self.my_color = turn_check(log, self.p, self.q)
+		if self.my_color == "w":
+			self.opponent_color = "b"
 		else:
-			opponent_color = "w"
-		mine = self.group_by_connected(log, turn)
+			self.opponent_color = "w"
+		mine = self.group_by_connected(log, self.opponent_color)
+		print("mine: ", mine)
 		if len(mine) == 0:
-			x = randint(1, self.n)
-			y = randint(1, self.m)
-			return Stone(str(x), str(y), turn)
-		opponent = self.group_by_connected(log, opponent_color)
+			return self.random_stone(log)
+		opponent = self.group_by_connected(log, self.opponent_color)
+		print("opponent:", opponent)
 		opponent_keys = opponent.keys()
 		if len(opponent_keys) == 0:
-			s = self.optimal_stone(mine)
-			s.color = turn
+			s = self.optimal_stone(mine, log)
+			s.color = self.my_color
 			return s
 		opponent_max_key = max(opponent_keys)
-		if opponent_max_key > 4:
+		print("opponent max", opponent_max_key)
+		if opponent_max_key >= 3:
 			# mode defense
+			print("def")
 			s = self.optimal_stone(opponent, log)
 		else:
 			# mode offense
+			print("off")
 			s = self.optimal_stone(mine, log)
-		s.color = turn
+		s.color = self.my_color
+		print(s)
 		return s
 
 	def filter_valid(self, corners: List[Stone], log: List[Stone]):
+		final_result = []
 		for corner in corners:
-			if int(corner.x) > self.m or int(corner.y) > self.n:
-				corners.remove(corner)
-			for stone in log:
-				if stone.x == corner.x and stone.y == corner.y:
-					corners.remove(corner)
-		return corners
+			if self.is_valid(corner, log):
+				final_result.append(corner)
+		return final_result
+
+	def is_valid(self, stone: Stone, log: List[Stone]) -> bool:
+		if int(stone.x) < 0 or int(stone.x) > self.m or int(stone.y) < 0 or int(stone.y) > self.n:
+			return False
+		for l in log:
+			if stone.x == l.x and stone.y == l.y:
+				return False
+		return True
 
 	def optimal_stone(self, possibles: Dict[int, List[Edge]], log: List[Stone]) -> Stone:
-		sorted_keys = sorted(possibles.keys())
-		for k in sorted_keys:
+		possible_key = list(possibles.keys())
+		possible_key.sort(reverse=True)
+		print("maximal", possible_key[0])
+		for k in possible_key:
 			candidates = self.get_corners(k, possibles[k])
 			corners = self.filter_valid(candidates, log)
 			if len(corners) > 0:
-				return choice(corners)
-		x = randint(1, self.n)
-		y = randint(1, self.m)
-		return Stone(str(x), str(y), possibles[0][0].stone.color)
+				c = choice(corners)
+				return c
+		return self.random_stone(log)
 
 	def get_corners(self, num: int, edges: List[Edge]) -> List[Stone]:
 		corners = []
@@ -152,6 +165,16 @@ class StrategicBot:
 					new_x, new_y = self.directions[direction](int(new_x), int(new_y))
 				corners.append(Stone(str(new_x), str(new_y), edge.stone.color))
 		return corners
+
+	def random_stone(self, log: List[Stone]) -> Stone:
+		valid = False
+		s = Stone
+		while not valid:
+			x = randint(1, self.n)
+			y = randint(1, self.m)
+			s = Stone(str(x), str(y), self.my_color)
+			valid = self.is_valid(s, log)
+		return s
 
 
 if __name__ == "__main__":
