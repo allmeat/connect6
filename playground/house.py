@@ -58,8 +58,8 @@ class House:
                 order = "tei"
                 stone = self.bot.tei_bot(self.board.log)
             else:
-                order = "alex"
-                stone = self.bot.alex_bot(self.board.log)
+                order = "jw"
+                stone = self.bot.strategic_bot(self.board.log)
 
             if not self.referee.valid_check(stone, self.board.log):
                 print("invalid")
