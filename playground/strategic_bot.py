@@ -1,25 +1,38 @@
 from collections import defaultdict
 from operator import itemgetter
 from typing import List, Dict
-from random import randint
-
+from random import randint, choice
+from dataclasses import dataclass
 from board import Stone, BoardConfig
 from util import turn_check, Direction
 
 
+@dataclass
+class Edge:
+	stone: Stone
+	directions: List[str]
+
+
 # edge is left most or upper most stone in a connection: left has priority
-def is_stone_edge(s: Stone, log: List[Stone]) -> bool:
-	is_present = [Stone(str(int(s.x) - 1), str(int(s.y) - 1), s.color),
-	              Stone(s.x, str(int(s.y) - 1), s.color),
-	              Stone(str(int(s.x) - 1), s.y, s.color),
-	              Stone(str(int(s.x) - 1), str(int(s.y) + 1), s.color)]
-	is_edge = True
+def is_stone_edge(s: Stone, log: List[Stone]) -> (bool, List[str]):
+	is_present = {
+		Direction.DOWN_RIGHT: Stone(str(int(s.x) - 1), str(int(s.y) - 1), s.color),
+		Direction.DOWN: Stone(s.x, str(int(s.y) - 1), s.color),
+		Direction.RIGHT: Stone(str(int(s.x) - 1), s.y, s.color),
+		Direction.UP_RIGHT: Stone(str(int(s.x) - 1), str(int(s.y) + 1), s.color)
+	}
+	direction = defaultdict(int)
 	for stone in log:
-		for p in is_present:
+		for dr, p in is_present.items():
+			direction[dr] = 1
 			if stone == p:
-				is_edge = False
+				del direction[dr]
 				break
-	return is_edge
+	if len(direction) > 0:
+		is_edge = True
+	else:
+		is_edge = False
+	return is_edge, list(direction.keys())
 
 
 class StrategicBot:
@@ -36,11 +49,21 @@ class StrategicBot:
 			Direction.DOWN_RIGHT: lambda x, y: (x + 1, y + 1),
 			Direction.UP_RIGHT: lambda x, y: (x + 1, y - 1)
 		}
+		self.counter_directions = {
+			Direction.RIGHT: lambda x, y: (x - 1, y),
+			Direction.DOWN: lambda x, y: (x, y - 1),
+			Direction.DOWN_RIGHT: lambda x, y: (x - 1, y - 1),
+			Direction.UP_RIGHT: lambda x, y: (x - 1, y + 1)
+		}
 
 	# TODO: to be generalized to util (on the next phase)
-	def connection_check(self, edge, log, num):
+	def connection_check(self, edge: Stone, log: List[Stone], num: int, dirs: List[str]):
 		is_connected = False
-		for _, direction in self.directions.items():
+		filtered_direction = {}
+		for direction_name, direction in self.directions.items():
+			if direction_name in dirs:
+				filtered_direction[direction_name] = direction
+		for _, direction in filtered_direction.items():
 			connection_count = 1
 			new_x, new_y = (edge.x, edge.y)
 			while True:
@@ -50,20 +73,25 @@ class StrategicBot:
 					connection_count += 1
 				else:
 					break
-
 			if connection_count == num:
 				is_connected = True
 				break
 		return is_connected
 
-	def group_by_connected(self, log: List[Stone], color: str) -> Dict[int, List[Stone]]:
+	def group_by_connected(self, log: List[Stone], color: str) -> Dict[int, List[Edge]]:
 		groups = defaultdict(list)
-		filtered_log = [s for s in log if s.color == color and is_stone_edge(s, log)]
+		edges = defaultdict(list)
+		for s in log:
+			is_edge, directions = is_stone_edge(s, log)
+			if s.color == color and is_edge:
+				edges[(s.x, s.y, s.color)] = directions
+		print(edges)
 		# returns connected that are not closed
-		for edge in filtered_log:
+		for edge_, dirs in edges.items():
+			edge = Stone(edge_[0], edge_[1], edge_[2])
 			for num in list(range(6, 0, -1)):
-				if self.connection_check(edge, log, num):
-					groups[num].append(edge)
+				if self.connection_check(edge, log, num, dirs):
+					groups[num].append(Edge(edge, dirs))
 					break
 		return groups
 
@@ -74,41 +102,44 @@ class StrategicBot:
 		else:
 			opponent_color = "w"
 		mine = self.group_by_connected(log, turn)
-		mine_keys = mine.keys()
-		if len(mine_keys) == 0:
+		if len(mine) == 0:
 			x = randint(1, self.n)
 			y = randint(1, self.m)
 			return Stone(str(x), str(y), turn)
-		mine_max_key = max(mine_keys)
 		opponent = self.group_by_connected(log, opponent_color)
 		opponent_keys = opponent.keys()
 		if len(opponent_keys) == 0:
-			s = self.optimal_stone(mine_max_key, mine)
+			s = self.optimal_stone(mine)
 			s.color = turn
 			return s
 		opponent_max_key = max(opponent_keys)
 		if opponent_max_key > 4:
 			# mode defense
-			s = self.optimal_stone(opponent_max_key, opponent)
+			s = self.optimal_stone(opponent)
 		else:
 			# mode offense
-			s = self.optimal_stone(mine_max_key, mine)
+			s = self.optimal_stone(mine)
 		s.color = turn
 		return s
 
-	@staticmethod
-	def optimal_stone(max_key: int, possibles: Dict[int, List[Stone]]) -> Stone:
-		maximum_possible = possibles[max_key]
-		if len(maximum_possible) != 1:
-			counts = defaultdict(int)
-			for num in list(range(len(maximum_possible), 1, -1)):
-				for pos in maximum_possible:
-					if pos in possibles[num]:
-						counts[(pos.x, pos.y, pos.color)] += 1
-				count_desc = sorted(counts.items(), key=itemgetter(1))
-				if count_desc[0] != count_desc[1]:
-					return Stone(count_desc[0][0][0], count_desc[0][0][1], count_desc[0][0][2])
-		return maximum_possible[0]
+	def optimal_stone(self, possibles: Dict[int, List[Edge]]) -> Stone:
+		sorted_keys = sorted(possibles.keys())
+		for k in sorted_keys:
+			corners = self.get_corners(k, possibles[k])
+			if len(corners) > 0:
+				return choice(corners)
+
+	def get_corners(self, num: int, edges: List[Edge]) -> List[Stone]:
+		corners = []
+		for edge in edges:
+			for direction in edge.directions:
+				_x, _y = self.counter_directions[direction](int(edge.stone.x), int(edge.stone.y))
+				corners.append(Stone(str(_x), str(_y), edge.stone.color))
+				new_x, new_y = edge.stone.x, edge.stone.y
+				for i in range(num):
+					new_x, new_y = self.directions[direction](int(new_x), int(new_y))
+				corners.append(Stone(str(new_x), str(new_y), edge.stone.color))
+		return corners
 
 
 if __name__ == "__main__":
