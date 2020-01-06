@@ -1,8 +1,8 @@
 from collections import defaultdict
-from operator import itemgetter
-from typing import List, Dict
-from random import randint, choice
 from dataclasses import dataclass
+from random import randint, choice
+from typing import List, Dict
+
 from board import Stone, BoardConfig
 from util import turn_check, Direction
 
