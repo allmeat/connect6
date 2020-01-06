@@ -60,10 +60,10 @@ class House:
             turn = util.turn_check(self.board.log, self.board.config.each_move, self.board.config.first_move)
             if self.first_player_first_move == (turn == "b"):
                 order = p1
-                stone = self.bot_alias[p1](self.board.log)
+                stone = self.bot_alias.get(p1, util.exit_by_alias)(self.board.log)
             else:
                 order = p2
-                stone = self.bot_alias[p2](self.board.log)
+                stone = self.bot_alias.get(p2, util.exit_by_alias)(self.board.log)
 
             if not self.referee.valid_check(stone, self.board.log):
                 print("invalid")
