@@ -88,17 +88,17 @@ class StrategicBotTest(unittest.TestCase):
 			is_edge, dirs = self.sb.is_stone_edge(s, self.vertical_test_log)
 			if is_edge:
 				vert_edges.append(Edge(s, dirs))
-		self.assertTrue(self.sb.connection_check(vert_edges[0], self.vertical_test_log, 5))
-		self.assertTrue(self.sb.connection_check(vert_edges[1], self.vertical_test_log, 4))
-		self.assertTrue(self.sb.connection_check(vert_edges[2], self.vertical_test_log, 2))
+		self.assertTrue(self.sb.check_connection(vert_edges[0], self.vertical_test_log, 5))
+		self.assertTrue(self.sb.check_connection(vert_edges[1], self.vertical_test_log, 4))
+		self.assertTrue(self.sb.check_connection(vert_edges[2], self.vertical_test_log, 2))
 
 		diag_edges = []
 		for s in self.diagonal_test_log:
 			is_edge, dirs = self.sb.is_stone_edge(s, self.diagonal_test_log)
 			if is_edge:
 				diag_edges.append(Edge(s, dirs))
-		self.assertTrue(self.sb.connection_check(diag_edges[0], self.diagonal_test_log, 4))
-		self.assertTrue(self.sb.connection_check(diag_edges[1], self.diagonal_test_log, 5))
+		self.assertTrue(self.sb.check_connection(diag_edges[0], self.diagonal_test_log, 4))
+		self.assertTrue(self.sb.check_connection(diag_edges[1], self.diagonal_test_log, 5))
 
 	def test_group_by_connected(self):
 		result = self.sb.group_by_connected(self.vertical_test_log, "b")

@@ -59,7 +59,7 @@ class StrategicBot:
 		return is_edge, directions
 
 	# TODO: to be generalized to util (on the next phase)
-	def connection_check(self, edge: Edge, log: List[Stone], num: int):
+	def check_connection(self, edge: Edge, log: List[Stone], num: int) -> bool:
 		is_connected = False
 		filtered_direction = {}
 		for direction_name, direction in self.directions.items():
@@ -91,7 +91,7 @@ class StrategicBot:
 		for edge_, dirs in edges.items():
 			edge = Edge(Stone(edge_[0], edge_[1], edge_[2]), dirs)
 			for num in list(range(6, 1, -1)):
-				if self.connection_check(edge, log, num):
+				if self.check_connection(edge, log, num):
 					groups[num].append(edge)
 					break
 		return groups
@@ -127,7 +127,7 @@ class StrategicBot:
 		print(s)
 		return s
 
-	def filter_valid(self, corners: List[Stone], log: List[Stone]):
+	def filter_valid(self, corners: List[Stone], log: List[Stone]) -> List[Stone]:
 		final_result = []
 		for corner in corners:
 			if self.is_valid(corner, log):
