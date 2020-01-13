@@ -69,7 +69,7 @@ class Board:
         save(self.figure)
 
     def render_figure(self):
-        show(self.figure)
+        show(self.figure, browser="safari")
 
     def put_stone(self, stone: Stone):
         if stone.color == "b":
