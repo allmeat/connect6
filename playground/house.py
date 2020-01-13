@@ -81,7 +81,8 @@ class House:
                 break
 
             if render_every:
-                self.board.render_figure()
+                # self.board.render_figure()
+                self.board.draw_board(self.board.log)
                 time.sleep(pause)
 
 
