@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from bokeh.plotting import figure, output_file, save, show
-
+from typing import List
+import numpy as np
 
 @dataclass
 class Stone:
     x: str
     y: str
     color: str
-
 
 @dataclass
 class BoardConfig:
@@ -33,6 +33,7 @@ class Board:
         self.figure = figure()
         self.log = []
         self.setup()
+        self.boardInterpreter = BoardInterpreter(self.config)
 
     def setup(self):
         x_tick = [str(x) for x in range(1, self.config.row + 1)]
@@ -98,6 +99,59 @@ class Board:
     def print_on_playing(self):
         self.figure.title.text = "on playing"
 
+    def draw_board(self, log: List[Stone]):
+        self.boardInterpreter.draw_board(log)
+
+class BoardInterpreter:
+
+    def __init__(self, board_config: BoardConfig):
+        self.k = board_config.connect
+        self.m = board_config.row
+        self.n = board_config.column
+        self.p = board_config.each_move
+        self.q = board_config.first_move
+
+    def array_to_board(self, x: int) -> str:
+        if x == 0:
+            points = "+"
+        elif x == 1:
+            points = "B"
+        elif x == 2:
+            points = "W"
+        else:  # x == -1:
+            points = "S"
+        return points
+
+    def stone_to_array(self, log: List[Stone]) -> np.array:
+        stone_array = np.zeros((self.m, self.n))
+        for pos in log:
+            x = int(pos.x) - 1
+            y = int(pos.y) - 1
+            if pos.color == "b":
+                stone_array[y, x] = 1
+            elif pos.color == "w":
+                stone_array[y, x] = 2
+            elif pos.color == "s":
+                stone_array[y, x] = -1
+        return stone_array
+
+    def array_to_stone(self, stone_array: np.array, color: str) -> List[Stone]:
+        if color == "b":
+            out = 1
+        elif color == "w":
+            out = 2
+        else:
+            out = -1
+        y, x = np.where(stone_array == out)
+        positions = list(zip(list(x), list(y)))
+        stones = [Stone(str(x + 1), str(y + 1), color) for x, y in positions]
+        return stones
+
+    def draw_board(self, log: List[Stone]):
+        stone_array = self.stone_to_array(log)
+        join_column = list(map(lambda y: " ".join([self.array_to_board(x) for i, x in enumerate(y)]), stone_array))
+        join_row = "\n" + "\n".join(join_column)
+        print(join_row)
 
 if __name__ == "__main__":
     test_log = [
@@ -126,7 +180,7 @@ if __name__ == "__main__":
     for item in test_log:
         board.put_stone(item)
     board.render_figure()
-
+    board.draw_board(board.log)
     print("--log ")
     for item in board.log:
         print("\t", item)

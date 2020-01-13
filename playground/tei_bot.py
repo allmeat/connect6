@@ -1,9 +1,9 @@
 import numpy as np
 from random import randint, choice
 from typing import List
-from board import Stone, BoardConfig
+from board import Stone, BoardConfig, BoardInterpreter
 from util import turn_check, Direction
-from util import BoardInterpreter
+
 
 class TeiBot:
 
@@ -29,53 +29,6 @@ class TeiBot:
 
     def draw_board(self, log: List[Stone]):
         self.boardInterpreter.draw_board(log)
-    '''
-    @staticmethod
-    def array_to_board(x: int) -> str:
-        if x == 0:
-            points = "+"
-        elif x == 1:
-            points = "B"
-        elif x == 2:
-            points = "W"
-        else:  # x == -1:
-            points = "S"
-        return points
-
-    @staticmethod
-    def stone_to_array(log: List[Stone]) -> np.array:
-        stone_array = np.zeros((19, 19))
-        for pos in log:
-            x = int(pos.x) - 1
-            y = int(pos.y) - 1
-            if pos.color == "b":
-                stone_array[y, x] = 1
-            elif pos.color == "w":
-                stone_array[y, x] = 2
-            elif pos.color == "s":
-                stone_array[y, x] = -1
-        return stone_array
-
-    @staticmethod
-    def array_to_stone(stone_array: np.array, color: str) -> List[Stone]:
-        if color == "b":
-            out = 1
-        elif color == "w":
-            out = 2
-        else:
-            out = -1
-        y, x = np.where(stone_array == out)
-        positions = list(zip(list(x), list(y)))
-        stones = [Stone(str(x + 1), str(y + 1), color) for x, y in positions]
-        return stones
-    '''
-    '''
-    def draw_board(self, log: List[Stone]):
-        stone_array = self.stone_to_array(log)
-        join_column = list(map(lambda y: " ".join([self.array_to_board(x) for i, x in enumerate(y)]), stone_array))
-        join_row = "\n" + "\n".join(join_column)
-        print(join_row)
-    '''
 
 
     @staticmethod
