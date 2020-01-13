@@ -76,8 +76,7 @@ class StrategicBot:
 				else:
 					break
 			if connection_count == num:
-				is_connected = True
-				break
+				return True
 		return is_connected
 
 	def group_by_connected(self, log: List[Stone], color: str) -> Dict[int, List[Edge]]:
@@ -103,28 +102,22 @@ class StrategicBot:
 		else:
 			self.opponent_color = "w"
 		mine = self.group_by_connected(log, self.opponent_color)
-		print("mine: ", mine)
 		if len(mine) == 0:
 			return self.random_stone(log)
 		opponent = self.group_by_connected(log, self.opponent_color)
-		print("opponent:", opponent)
 		opponent_keys = opponent.keys()
 		if len(opponent_keys) == 0:
 			s = self.optimal_stone(mine, log)
 			s.color = self.my_color
 			return s
 		opponent_max_key = max(opponent_keys)
-		print("opponent max", opponent_max_key)
 		if opponent_max_key >= 3:
 			# mode defense
-			print("def")
 			s = self.optimal_stone(opponent, log)
 		else:
 			# mode offense
-			print("off")
 			s = self.optimal_stone(mine, log)
 		s.color = self.my_color
-		print(s)
 		return s
 
 	def filter_valid(self, corners: List[Stone], log: List[Stone]) -> List[Stone]:
@@ -145,7 +138,6 @@ class StrategicBot:
 	def optimal_stone(self, possibles: Dict[int, List[Edge]], log: List[Stone]) -> Stone:
 		possible_key = list(possibles.keys())
 		possible_key.sort(reverse=True)
-		print("maximal", possible_key[0])
 		for k in possible_key:
 			candidates = self.get_corners(k, possibles[k])
 			corners = self.filter_valid(candidates, log)
