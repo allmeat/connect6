@@ -15,7 +15,6 @@ def exit_by_alias(_: List[Stone]) -> None:
 
 
 class Direction:
-
     HORIZONTAL = "h"
     VERTICAL = "v"
     NEGATIVE_DIAGONAL = "nd"
