@@ -3,11 +3,13 @@ from bokeh.plotting import figure, output_file, save, show
 from typing import List
 import numpy as np
 
+
 @dataclass
 class Stone:
     x: str
     y: str
     color: str
+
 
 @dataclass
 class BoardConfig:
@@ -102,6 +104,7 @@ class Board:
     def draw_board(self, log: List[Stone]):
         self.boardInterpreter.draw_board(log)
 
+
 class BoardInterpreter:
 
     def __init__(self, board_config: BoardConfig):
@@ -111,7 +114,8 @@ class BoardInterpreter:
         self.p = board_config.each_move
         self.q = board_config.first_move
 
-    def array_to_board(self, x: int) -> str:
+    @staticmethod
+    def array_to_board(x: int) -> str:
         if x == 0:
             points = "+"
         elif x == 1:
@@ -135,7 +139,8 @@ class BoardInterpreter:
                 stone_array[y, x] = -1
         return stone_array
 
-    def array_to_stone(self, stone_array: np.array, color: str) -> List[Stone]:
+    @staticmethod
+    def array_to_stone(stone_array: np.array, color: str) -> List[Stone]:
         if color == "b":
             out = 1
         elif color == "w":
@@ -152,6 +157,7 @@ class BoardInterpreter:
         join_column = list(map(lambda y: " ".join([self.array_to_board(x) for i, x in enumerate(y)]), stone_array))
         join_row = "\n" + "\n".join(join_column)
         print(join_row)
+
 
 if __name__ == "__main__":
     test_log = [

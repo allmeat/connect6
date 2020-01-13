@@ -15,8 +15,7 @@ class TeiBot:
         self.q = board_config.first_move
         self.boardInterpreter = BoardInterpreter(board_config)
 
-
-    #array_to_board = lambda self, x: self.boardInterpreter.array_to_board(x)
+    # array_to_board = lambda self, x: self.boardInterpreter.array_to_board(x)
 
     def array_to_board(self, x: int) -> str:
         return self.boardInterpreter.array_to_board(x)
@@ -29,7 +28,6 @@ class TeiBot:
 
     def draw_board(self, log: List[Stone]):
         self.boardInterpreter.draw_board(log)
-
 
     @staticmethod
     def move_stone(stone: Stone, direction: str, stride: int = 1) -> Stone:
