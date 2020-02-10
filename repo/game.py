@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class GameRecord:
+class Game:
     id: int
     winner: str
     total_size: int
@@ -12,9 +12,9 @@ class GameRecord:
 
 
 @dataclass
-class GameRecordLog:
+class GameLog:
     id: int
-    record_id: int #id from GameRecord
+    game_id: int #id from GameRecord
     index: int
     stone_color: str
     x_axis: int
