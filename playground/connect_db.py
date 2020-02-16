@@ -1,20 +1,32 @@
-import pymysql
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import sessionmaker
 
-db = pymysql.connect(
-    host="35.233.179.226",
-    port=3306,
-    user="root",
-    passwd="allmeat",
-    db="playground_log",
-    charset="utf8",
-)
+"""[reference] https://docs.sqlalchemy.org/en/13/orm/tutorial.html"""
 
-cursor = db.cursor()
+engine = create_engine("mysql+pymysql://root:allmeat@35.233.179.226:3306/playground_log", echo=True)
 
-query = "INSERT INTO `playground_log`.`TESTTABLE` (`name`, `age`) VALUES ('walter', 34);"
-cursor.execute(query)
+base = declarative_base()
 
-db.commit()
-db.close()
+session = sessionmaker(bind=engine)()
 
-print("insert done")
+
+# TODO: need dataclass to DB table class converter
+class TESTTABLE(base):
+    __tablename__ = "TESTTABLE"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    age = Column(Integer)
+
+
+user_list = [
+    TESTTABLE(name="glex", age=31),
+    TESTTABLE(name="hlex", age=32),
+    TESTTABLE(name="ilex", age=33),
+]
+
+session.add_all(user_list)
+
+session.commit()
