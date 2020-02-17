@@ -1,74 +1,73 @@
 import datetime
-from dataclasses import dataclass
 from typing import List
-from pymysql import connections
+
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import Session
+
 from board import Stone, BoardConfig
 
 
-@dataclass
 class Game:
-    winner: str
-    total_size: int
-    board_config: str
-    black_player: str
-    white_player: str
-    created_time: datetime
+    __tablename__ = "game"
+
+    id: Column(Integer, primary_key=True)
+    winner = Column(String)
+    total_size = Column(Integer)
+    board_config = Column(String)
+    black_player = Column(String)
+    white_player = Column(String)
+    created_time = Column(DateTime)
+
+    def __init__(self,
+                 winner: str,
+                 board_config: BoardConfig,
+                 black_player: str,
+                 white_player: str,
+                 logs: List[Stone]):
+        self.winner = winner,
+        self.total_size = len(logs),
+        self.board_config = str(board_config),
+        self.black_player = black_player,
+        self.white_player = white_player,
+        self.created_time = datetime.datetime.now
 
 
-@dataclass
 class GameLog:
-    game_id: int  # id from GameRecord
-    idx: int
-    stone_color: str
-    x_axis: int
-    y_axis: int
+    __tablename__ = "game_log"
+
+    id = Column(Integer, primary_key=True)
+    game_id = Column(Integer)  # id from GameRecord
+    idx = Column(Integer)
+    stone_color = Column(String)
+    x_axis = Column(Integer)
+    y_axis = Column(Integer)
+
+    def __init__(self, game_id: int,
+                 index: int,
+                 stone: Stone):
+        self.game_id = game_id,
+        self.idx = index,
+        self.stone_color = stone.color,
+        self.x_axis = int(stone.x),
+        self.y_axis = int(stone.y)
 
 
-def convert_to_game(winner: str,
-                    board_config: BoardConfig,
-                    black_player: str,
-                    white_player: str,
-                    logs: List[Stone]) -> Game:
-    return Game(winner=winner,
-                total_size=len(logs),
-                board_config=str(board_config),
-                black_player=black_player,
-                white_player=white_player,
-                created_time=datetime.datetime.now)
-
-
-def convert_to_game_log(game_id: int,
-                        index: int,
-                        stone: Stone) -> GameLog:
-    return GameLog(game_id=game_id,
-                   idx=index,
-                   stone_color=stone.color,
-                   x_axis=int(stone.x),
-                   y_axis=int(stone.y))
-
-
-def save_game(db: connections.Connection,
+def save_game(session: Session,
               winner: str,
               board_config: BoardConfig,
               black_player: str,
               white_player: str,
               logs: List[Stone]):
-    game = convert_to_game(winner=winner, board_config=board_config, black_player=black_player,
-                           white_player=white_player, logs=logs)
-    cursor = db.cursor()
-    query = ""  # need a function to create query
-    cursor.execute(query)
-    db.commit()
-    db.close()
+    game = Game(winner=winner, board_config=board_config, black_player=black_player,
+                white_player=white_player, logs=logs)
+    session.add(game)
+    session.commit()
 
 
-def save_game_logs(db: connections.Connection,
+def save_game_logs(session: Session,
                    game_id: int,
                    logs: List[Stone]):
     for i, stone in enumerate(logs):
-        game_log = convert_to_game_log(game_id=game_id, index=i, stone=stone)
-        cursor = db.cursor()
-        query = ""  # need a function to create query
-        cursor.execute(query)
-        db.commit()
-        db.close()
+        game_log = GameLog(game_id=game_id, index=i, stone=stone)
+        session.add(game_log)
+        session.commit()
