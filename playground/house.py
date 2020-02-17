@@ -70,6 +70,9 @@ class House:
                 print("invalid")
                 continue
 
+            game_info = {}
+
+
             self.board.put_stone(stone)
             print(f"{order} stone: {stone.x},{stone.y},{turn}")
             end_check = self.referee.end_check(self.board.log, self.board.config)
@@ -78,6 +81,22 @@ class House:
                 print(f"{winner} wins")
                 self.board.print_winner(winner)
                 self.board.render_figure()
+
+                game_info["winner"] = winner
+                game_info["config"] = self.board.config
+                game_info["len_log"] = len(self.board.log)
+
+                if self.first_player_first_move:
+                    game_info["black_player"]= p1
+                    game_info["white_player"] = p2
+                else :
+                    game_info["black_player"] = p2
+                    game_info["white_player"] = p1
+                game_info["first_move"] = self.first_player_first_move
+                game_info["log"] = self.board.log
+
+
+                return game_info
                 break
 
             if render_every:
@@ -85,9 +104,22 @@ class House:
                 self.board.draw_board(self.board.log)
                 time.sleep(pause)
 
+            '''
+            self.board.log
+            winner
+            self.board
+            self.board.config
+            len(logs)
+            black player name
+            white player name
+            '''
+
+
 
 if __name__ == "__main__":
     coin_toss = True if random() > 0.5 else False
     print("1p first: ", coin_toss)
     house = House(first_player_first_move=coin_toss)
-    house.simulate("alex", "jw", render_every=False, pause=0.5)
+    #house.simulate("alex", "tei", render_every=False, pause=0.5)
+    aa = house.simulate("alex", "tei", render_every=False, pause=0.5)
+    print(aa)
