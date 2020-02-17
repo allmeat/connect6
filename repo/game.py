@@ -1,6 +1,6 @@
 import datetime, json
 from typing import List
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import Session
 
 from board import Stone, BoardConfig
@@ -35,7 +35,7 @@ class GameLog:
     __tablename__ = "game_log"
 
     id = Column(Integer, primary_key=True)
-    game_id = Column(Integer)  # id from GameRecord
+    game_id = Column(Integer, ForeignKey('game.id'))  # id from GameRecord
     idx = Column(Integer)
     stone_color = Column(String)
     x_axis = Column(Integer)
@@ -51,16 +51,19 @@ class GameLog:
         self.y_axis = int(stone.y)
 
 
-def save_game(session: Session,
-              winner: str,
-              board_config: BoardConfig,
-              black_player: str,
-              white_player: str,
-              logs: List[Stone]):
+def save_game_and_return_id(session: Session,
+                            winner: str,
+                            board_config: BoardConfig,
+                            black_player: str,
+                            white_player: str,
+                            logs: List[Stone]) -> int:
     game = Game(winner=winner, board_config=board_config, black_player=black_player,
                 white_player=white_player, logs=logs)
     session.add(game)
+    session.flush()
+    game_id = game.id
     session.commit()
+    return game_id
 
 
 def save_game_logs(session: Session,
@@ -78,5 +81,5 @@ def save_game_result(session: Session,
                      black_player: str,
                      white_player: str,
                      logs: List[Stone]):
-    save_game(session, winner, board_config, black_player, white_player, logs)
-    game_id = session.
+    game_id = save_game_and_return_id(session, winner, board_config, black_player, white_player, logs)
+    save_game_logs(session, game_id, logs)
