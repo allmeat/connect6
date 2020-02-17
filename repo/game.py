@@ -1,5 +1,7 @@
-import datetime, json
+import datetime
+import json
 from typing import List
+
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import Session
 
