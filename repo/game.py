@@ -43,7 +43,8 @@ class GameLog:
     x_axis = Column(Integer)
     y_axis = Column(Integer)
 
-    def __init__(self, game_id: int,
+    def __init__(self,
+                 game_id: int,
                  index: int,
                  stone: Stone):
         self.game_id = game_id,
