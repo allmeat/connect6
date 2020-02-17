@@ -12,19 +12,19 @@ class DBConfig:
         super(DBConfig, self).__init__()
         self.session_maker = sessionmaker()
 
-    def setup_db_connection(self, uri, echo=False) -> Session:
+    def setup_db_connection(self, uri: str, echo: bool = False) -> Session:
         engine = create_engine(uri, echo=echo)
         self.session_maker.configure(bind=engine)
         session = self.session_maker()
         return session
 
     @staticmethod
-    def insert(session, item):
+    def insert(session: Session, item):
         session.add(item)
         session.commit()
 
     @staticmethod
-    def insert_list(session, item_list):
+    def insert_list(session: Session, item_list):
         session.add_all(item_list)
         session.commit()
 
