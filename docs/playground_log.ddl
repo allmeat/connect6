@@ -1,4 +1,4 @@
-CREATE TABLE games (
+CREATE TABLE playground_log.games (
   id int(11) NOT NULL AUTO_INCREMENT,
   winner varchar(10) NOT NULL,
   total_size int(15) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE games (
   KEY idx_winner (winner)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE game_logs (
+CREATE TABLE playground_log.game_logs (
   id int(11) NOT NULL AUTO_INCREMENT,
   game_id int(11) NOT NULL,
   idx int(15) NOT NULL,
