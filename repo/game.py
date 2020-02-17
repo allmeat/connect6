@@ -1,6 +1,5 @@
-import datetime
+import datetime, json
 from typing import List
-
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import Session
 
@@ -26,7 +25,7 @@ class Game:
                  logs: List[Stone]):
         self.winner = winner,
         self.total_size = len(logs),
-        self.board_config = str(board_config),
+        self.board_config = json.dumps(board_config.__dict__),
         self.black_player = black_player,
         self.white_player = white_player,
         self.created_time = datetime.datetime.now
@@ -71,3 +70,13 @@ def save_game_logs(session: Session,
         game_log = GameLog(game_id=game_id, index=i, stone=stone)
         session.add(game_log)
         session.commit()
+
+
+def save_game_result(session: Session,
+                     winner: str,
+                     board_config: BoardConfig,
+                     black_player: str,
+                     white_player: str,
+                     logs: List[Stone]):
+    save_game(session, winner, board_config, black_player, white_player, logs)
+    game_id = session.
