@@ -4,11 +4,13 @@ from typing import List
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.declarative import declarative_base
 
 from board import Stone, BoardConfig
 
+Base = declarative_base()
 
-class Game:
+class Game(Base):
     __tablename__ = "game"
 
     id: Column(Integer, primary_key=True)
@@ -34,7 +36,7 @@ class Game:
         self.created_time = datetime.datetime.now
 
 
-class GameLog:
+class GameLog(Base):
     __tablename__ = "game_log"
 
     id = Column(Integer, primary_key=True)
