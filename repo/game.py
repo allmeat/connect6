@@ -14,7 +14,7 @@ Base = declarative_base()
 class Game(Base):
     __tablename__ = "game"
 
-    id: Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     winner = Column(String)
     total_size = Column(Integer)
     board_config = Column(String)
@@ -38,7 +38,7 @@ class Game(Base):
 
     def __repr__(self):
         return "<Game('%s', '%s', '%s','%s','%s','%s')>" % (
-        self.winner, self.total_size, self.board_config, self.black_player, self.white_player, self.created_time)
+            self.winner, self.total_size, self.board_config, self.black_player, self.white_player, self.created_time)
 
 
 class GameLog(Base):
