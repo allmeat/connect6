@@ -5,6 +5,7 @@ from board import Board, Stone
 from referee import Referee
 from bot import Bot
 import util
+from repo.game import Game, GameLog
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
@@ -88,12 +89,29 @@ class House:
                 if self.first_player_first_move:
                     game_info["black_player"] = p1
                     game_info["white_player"] = p2
+                    #black_player = p1
+                    #white_player = p2
                 else:
                     game_info["black_player"] = p2
                     game_info["white_player"] = p1
+                    #black_player = p1
+                    #white_player = p2
+
                 game_info["first_move"] = self.first_player_first_move
                 game_info["log"] = self.board.log
-                return game_info
+
+                game = Game(
+                    winner = game_info['winner'],
+                    board_config = game_info['config'],
+                    black_player = game_info['black_player'],
+                    white_player = game_info['white_player'],
+                    logs = game_info['log'],
+                )
+                game_log=[]
+                for i, stone in enumerate(self.board.log):
+                    game_log.append(GameLog(game_id=1, index=i, stone=stone))
+
+                return game, game_log#game_info
 
             if render_every:
                 # self.board.render_figure()
