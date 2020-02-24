@@ -12,7 +12,7 @@ Base = declarative_base()
 
 
 class Game(Base):
-    __tablename__ = "game"
+    __tablename__ = "games"
 
     id = Column(Integer, primary_key=True)
     winner = Column(String)
@@ -34,11 +34,7 @@ class Game(Base):
         self.board_config = json.dumps(board_config.__dict__)
         self.black_player = black_player
         self.white_player = white_player
-        self.created_time = datetime.datetime.now
-
-    def __repr__(self):
-        return "<Game('%s', '%s', '%s','%s','%s','%s')>" % (
-            self.winner, self.total_size, self.board_config, self.black_player, self.white_player, self.created_time)
+        self.created_time = datetime.datetime.now()
 
 
 class GameLog(Base):

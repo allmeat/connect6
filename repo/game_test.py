@@ -14,7 +14,6 @@ class GameTest(unittest.TestCase):
     def test_save_game_logs(self):
         db = DBConfig()
         sess = db.setup_db_connection(self.engine)
-
         winner = "monkey"
         board_config = BoardConfig(19, 19, 6, 2, 1)
         black_player = "dog"
