@@ -10,6 +10,7 @@ from board import Stone, BoardConfig
 
 Base = declarative_base()
 
+
 class Game(Base):
     __tablename__ = "game"
 
@@ -28,12 +29,16 @@ class Game(Base):
                  white_player: str,
                  logs: List[Stone],
                  ):
-        self.winner = winner,
-        self.total_size = len(logs),
-        self.board_config = json.dumps(board_config.__dict__),
-        self.black_player = black_player,
-        self.white_player = white_player,
+        self.winner = winner
+        self.total_size = len(logs)
+        self.board_config = json.dumps(board_config.__dict__)
+        self.black_player = black_player
+        self.white_player = white_player
         self.created_time = datetime.datetime.now
+
+    def __repr__(self):
+        return "<Game('%s', '%s', '%s','%s','%s','%s')>" % (
+        self.winner, self.total_size, self.board_config, self.black_player, self.white_player, self.created_time)
 
 
 class GameLog(Base):
@@ -51,10 +56,10 @@ class GameLog(Base):
                  index: int,
                  stone: Stone,
                  ):
-        self.game_id = game_id,
-        self.idx = index,
-        self.stone_color = stone.color,
-        self.x_axis = int(stone.x),
+        self.game_id = game_id
+        self.idx = index
+        self.stone_color = stone.color
+        self.x_axis = int(stone.x)
         self.y_axis = int(stone.y)
 
 

@@ -1,7 +1,7 @@
 import unittest
 
 from connect_db import DBConfig
-from game import Game
+from game import *
 from playground.board import BoardConfig
 from playground.house import Stone
 
@@ -29,6 +29,7 @@ class GameTest(unittest.TestCase):
             white_player=white_player,
             logs=logs,
         )
+        self.assertEqual(winner, game.winner)
         sess.add(game)
         sess.flush()
         gid = game.id
