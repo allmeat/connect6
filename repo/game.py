@@ -3,7 +3,6 @@ import json
 from typing import List
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 
