@@ -42,7 +42,7 @@ class GameLog(Base):
     __tablename__ = "game_logs"
 
     id = Column(Integer, primary_key=True)
-    game_id = Column(Integer, ForeignKey("game.id"))  # id from GameRecord
+    game_id = Column(Integer, ForeignKey("games.id"))  # id from GameRecord
     idx = Column(Integer)
     stone_color = Column(String)
     x_axis = Column(Integer)
@@ -59,8 +59,6 @@ class GameLog(Base):
         self.x_axis = int(stone.x)
         self.y_axis = int(stone.y)
 
-
-Game.logs = relationship("GameLog", order_by=GameLog.id, back_populates="games")
 
 def save_game_and_return_id(session: Session,
                             winner: str,
