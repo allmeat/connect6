@@ -48,6 +48,7 @@ class GameTest(unittest.TestCase):
             Stone("2", "2", "w"),
         ]
         game_id = save_game_and_return_id(self.session, winner, board_config, black_player, white_player, logs)
+        save_game_logs(self.session, game_id, logs)
         result_game = self.session.query(Game).filter(Game.id == game_id).first()
         print(result_game.id, result_game.winner)
         result_game_log = self.session.query(GameLog).filter(GameLog.game_id == game_id).all()
