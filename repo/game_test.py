@@ -18,14 +18,19 @@ class GameTest(unittest.TestCase):
         board_config = BoardConfig(19, 19, 6, 2, 1)
         black_player = "dog"
         white_player = "monkey"
-        logs = [Stone("3", "2", "b"),
-                Stone("2", "1", "w"),
-                Stone("2", "2", "w")]
+        logs = [
+            Stone("3", "2", "b"),
+            Stone("2", "1", "w"),
+            Stone("2", "2", "w"),
+        ]
         gid = save_game_and_return_id(
-            session=self.session, winner=winner,
+            session=self.session,
+            winner=winner,
             board_config=board_config,
-            black_player=black_player, white_player=white_player,
-            logs=logs)
+            black_player=black_player,
+            white_player=white_player,
+            logs=logs,
+        )
         res = self.session.query(Game).filter(Game.id == gid).first()
         self.assertEqual(gid, res.id)
         self.assertEqual(winner, res.winner)
@@ -37,9 +42,11 @@ class GameTest(unittest.TestCase):
         board_config = BoardConfig(19, 19, 6, 2, 1)
         black_player = "dog"
         white_player = "monkey"
-        logs = [Stone("3", "2", "b"),
-                Stone("2", "1", "w"),
-                Stone("2", "2", "w")]
+        logs = [
+            Stone("3", "2", "b"),
+            Stone("2", "1", "w"),
+            Stone("2", "2", "w"),
+        ]
         save_game_result(self.session, winner, board_config, black_player, white_player, logs)
         result_game = self.session.query(Game).filter(Game.winner == "monkey").first()
         result_game_log = self.session.query(GameLog).filter(GameLog.game_id == result_game.id).all()
