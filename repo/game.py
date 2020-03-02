@@ -3,6 +3,7 @@ import json
 from typing import List
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -38,7 +39,7 @@ class Game(Base):
 
 
 class GameLog(Base):
-    __tablename__ = "game_log"
+    __tablename__ = "game_logs"
 
     id = Column(Integer, primary_key=True)
     game_id = Column(Integer, ForeignKey("game.id"))  # id from GameRecord
@@ -58,6 +59,8 @@ class GameLog(Base):
         self.x_axis = int(stone.x)
         self.y_axis = int(stone.y)
 
+
+Game.logs = relationship("GameLog", order_by=GameLog.id, back_populates="games")
 
 def save_game_and_return_id(session: Session,
                             winner: str,
