@@ -32,16 +32,6 @@ class GameTest(unittest.TestCase):
         self.assertEqual(white_player, res.white_player)
         self.assertEqual(black_player, res.black_player)
 
-    def test_save_game_logs(self):
-        game_id = 0
-        logs = [Stone("3", "2", "b"),
-                Stone("2", "1", "w"),
-                Stone("2", "2", "w")]
-        save_game_logs(self.session, game_id, logs)
-        res = self.session.query(Game).filter(GameLog.game_id == game_id).all()
-        self.assertEqual(3, len(res))
-        self.assertEqual(0,res(0).index)
-
     def test_save_game_result(self):
         winner = "monkey"
         board_config = BoardConfig(19, 19, 6, 2, 1)
@@ -51,3 +41,6 @@ class GameTest(unittest.TestCase):
                 Stone("2", "1", "w"),
                 Stone("2", "2", "w")]
         save_game_result(self.session, winner, board_config, black_player, white_player, logs)
+        result_game = self.session.query(Game).filter(Game.winner == "monkey").first()
+        result_game_log = self.session.query(GameLog).filter(GameLog.game_id == result_game.id).all()
+        self.assertEqual(3, len(result_game_log))

@@ -15,7 +15,6 @@ CREATE TABLE playground_log.game_logs (
   id int(11) NOT NULL AUTO_INCREMENT,
   game_id int(11) NOT NULL,
   idx int(15) NOT NULL,
-  total_size int(15) NOT NULL,
   stone_color varchar(20),
   x_axis int(15),
   y_axis int(25),
