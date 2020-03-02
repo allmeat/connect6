@@ -20,6 +20,6 @@ CREATE TABLE playground_log.game_logs (
   y_axis int(25),
 
   PRIMARY KEY (id),
-  FOREIGN KEY (game_id) REFERENCES games(id),
+  FOREIGN KEY (game_id) REFERENCES playground_log.games(id),
   KEY idx_game_id (game_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
