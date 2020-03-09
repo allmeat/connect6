@@ -74,11 +74,11 @@ class House:
                     db = DBConfig()
                     session = db.setup_db_connection(engine)
                     save_game_result(
-                        session, winner=game_info['winner'],
-                        board_config=game_info['config'],
-                        black_player=game_info['black_player'],
-                        white_player=game_info['white_player'],
-                        logs=game_info['log']
+                        session, winner=game_info["winner"],
+                        board_config=game_info["config"],
+                        black_player=game_info["black_player"],
+                        white_player=game_info["white_player"],
+                        logs=game_info["log"]
                     )
 
                     print("Saved game result")
