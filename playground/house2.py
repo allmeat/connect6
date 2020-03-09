@@ -1,12 +1,14 @@
 import os
 import time
-import util
-from repo.game import save_game_result
-from connect_db import DBConfig
 from random import random
+
+import util
 from board import Board
-from referee import Referee
 from bot import Bot
+from connect_db import DBConfig
+from referee import Referee
+from repo.game import save_game_result
+
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
