@@ -1,14 +1,16 @@
 import os
+import sys
 import time
 from random import random
 
 import util
 from board import Board
 from bot import Bot
-from connect_db import DBConfig
 from referee import Referee
-from repo.game import save_game_result
 
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from repo.connect_db import DBConfig
+from repo.game import save_game_result
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
