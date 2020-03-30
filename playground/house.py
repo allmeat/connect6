@@ -20,6 +20,7 @@ class House:
         self.bot_alias = {
             "alex": self.bot.alex_bot,
             "tei": self.bot.tei_bot,
+            "tei_v2" : self.bot.tei_bot_v2,
             "jw": self.bot.alex_bot
         }
 
@@ -90,4 +91,4 @@ if __name__ == "__main__":
     coin_toss = True if random() > 0.5 else False
     print("1p first: ", coin_toss)
     house = House(first_player_first_move=coin_toss)
-    house.simulate("alex", "jw", render_every=False, pause=0.5)
+    house.simulate("jw", "tei_v2", render_every=False, pause=0.5)
