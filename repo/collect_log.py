@@ -1,5 +1,6 @@
 import os
 from random import random, sample
+import argparse
 
 from house import House
 from connect_db import DBConfig
@@ -38,7 +39,12 @@ class LogCollector:
 
 
 if __name__ == "__main__":
-    simulation_counts = 100
+    parser = argparse.ArgumentParser("simulates and saves logs")
+    parser.add_argument("total_simulations", type=int,
+                        help="total number of simulations")
+    args = parser.parse_args()
+
+    simulation_counts = args.total_simulations
     lc = LogCollector()
     players = ["alex", "jw", "tei"]
 
