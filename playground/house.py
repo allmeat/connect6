@@ -22,6 +22,7 @@ class House:
             "tei": self.bot.tei_bot,
             "jw": self.bot.alex_bot
         }
+        self.winner = "no one"
 
     @staticmethod
     def player_input(color: str) -> Stone:
@@ -74,9 +75,9 @@ class House:
             print(f"{order} stone: {stone.x},{stone.y},{turn}")
             end_check = self.referee.end_check(self.board.log, self.board.config)
             if end_check.is_end:
-                winner = "no one" if end_check.is_tie else order
-                print(f"{winner} wins")
-                self.board.print_winner(winner)
+                self.winner = "no one" if end_check.is_tie else order
+                print(f"{self.winner} wins")
+                self.board.print_winner(self.winner)
                 self.board.render_figure()
                 break
 
