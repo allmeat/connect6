@@ -1,11 +1,10 @@
+import argparse
 import os
 from random import random, sample
-import argparse
 
-from house import House
-from board import BoardConfig
 from connect_db import DBConfig
 from game import save_game_result
+from house import House
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
