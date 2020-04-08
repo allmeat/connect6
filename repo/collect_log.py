@@ -15,11 +15,11 @@ class LogCollector:
 
     def __init__(self):
         self.engine = "mysql+pymysql://root:allmeat@35.233.179.226:3306/playground_log"
-        self.winner: None
-        self.board_config: None
-        self.black_player: None
-        self.white_player: None
-        self.logs: None
+        self.winner = None
+        self.board_config = None
+        self.black_player = None
+        self.white_player = None
+        self.logs = None
 
     def get_simulated_result(self, player1, player2: str):
         coin_toss = True if random() > 0.5 else False
