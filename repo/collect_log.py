@@ -47,11 +47,16 @@ if __name__ == "__main__":
     simulation_counts = args.total_simulations
     lc = LogCollector()
     players = ["alex", "jw", "tei"]
-
-    for i in range(simulation_counts):
+    i = 0
+    while i <= simulation_counts:
         print("starting simulation: ", i)
         p1, p2 = sample(players, 2)
         print("p1:", p1, " and p2:", p2)
         lc.get_simulated_result(p1, p2)
+        if lc.winner == "no one":
+            "re-sampling players"
+            continue
+        print("saving simulation: ", i)
         lc.insert()
-        print("finishing simulation: ", i)
+        print("finished simulation: ", i)
+        i += 1

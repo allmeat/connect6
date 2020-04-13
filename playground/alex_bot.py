@@ -54,7 +54,7 @@ class AlexBot:
         positive_diagonal = self.find_connection(focus_area, Direction.POSITIVE_DIAGONAL, left_end, upper_end)
         candidates = horizontal + vertical + negative_diagonal + positive_diagonal
         if len(candidates) == 0:
-            print("expect tie")
+            # print("expect tie")
             random_empty_spot = choice(self.empty_spots(log))
             return Stone(random_empty_spot.x, random_empty_spot.y, turn)
 

@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from board import Stone, BoardConfig
 
+
 Base = declarative_base()
 
 class Game(Base):
