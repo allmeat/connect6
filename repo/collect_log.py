@@ -22,7 +22,7 @@ class LogCollector:
 
     def get_simulated_result(self, player1, player2: str):
         coin_toss = True if random() > 0.5 else False
-        house = House(first_player_first_move=coin_toss)
+        house = House(first_player_first_move=coin_toss, debug=False)
         house.simulate(player1, player2, render_every=False, pause=0.5)
         if coin_toss:
             self.black_player, self.white_player = player1, player2
