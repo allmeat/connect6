@@ -40,8 +40,10 @@ class LogCollector:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("simulates and saves logs")
-    parser.add_argument("total_simulations", type=int,
-                        help="total number of simulations")
+    parser.add_argument("total_simulations",
+                        type=int,
+                        help="total number of simulations",
+                        )
     args = parser.parse_args()
 
     simulation_counts = args.total_simulations
