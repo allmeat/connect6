@@ -11,6 +11,7 @@ from board import Stone, BoardConfig
 
 Base = declarative_base()
 
+
 class Game(Base):
     __tablename__ = "games"
 
