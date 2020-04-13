@@ -47,7 +47,7 @@ if __name__ == "__main__":
     simulation_counts = args.total_simulations
     lc = LogCollector()
     players = ["alex", "jw", "tei"]
-    i = 0
+    i = 1
     while i <= simulation_counts:
         print("starting simulation: ", i)
         p1, p2 = sample(players, 2)
