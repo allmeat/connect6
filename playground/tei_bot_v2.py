@@ -2,12 +2,12 @@ import numpy as np
 from random import randint, choice
 from typing import List
 from board import Stone, BoardConfig, BoardInterpreter
-from util import turn_check, Direction
+from util import turn_check
 
-from tei_bot_v2_util import get_black, get_white, find_connected_19x19, suggest_position_by_connected_element
+from tei_bot_v2_util import get_black, get_white, suggest_position_by_connected_element
+
 
 class TeiBot:
-
     def __init__(self, board_config: BoardConfig):
         self.k = board_config.connect
         self.m = board_config.row
@@ -15,8 +15,6 @@ class TeiBot:
         self.p = board_config.each_move
         self.q = board_config.first_move
         self.boardInterpreter = BoardInterpreter(board_config)
-
-    # array_to_board = lambda self, x: self.boardInterpreter.array_to_board(x)
 
     def array_to_board(self, x: int) -> str:
         return self.boardInterpreter.array_to_board(x)
@@ -30,27 +28,8 @@ class TeiBot:
     def draw_board(self, log: List[Stone]):
         self.boardInterpreter.draw_board(log)
 
-
-    def suggest_positions(self, log: List[Stone], lower: int = 1, upper: int = 19) -> List[Stone]:
+    def suggest_positions(self, log: List[Stone]) -> List[Stone]:
         turn = turn_check(log, self.p, self.q)
-        """
-        lastLogNum = len(log)- 1
-        lastLogNum_1 = len(log) - 2
-        turn_0 = log[lastLogNum].color
-        turn_1 = log[lastLogNum_1].color
-        if turn_0 == "b":
-            if turn_1=="b":
-                turn = "w"
-            else:
-                turn="b"
-        else:
-            if turn_1 == "b":
-                turn = "b"
-            else:
-                turn = "w"
-
-        """
-
         stone_array = self.stone_to_array(log)
         suggestions = suggest_position_by_connected_element(stone_array, turn) * -1
         suggestions = np.clip(stone_array + suggestions, -1, 0)
@@ -63,7 +42,7 @@ class TeiBot:
             x = randint(1, self.n)
             y = randint(1, self.m)
             return Stone(str(x), str(y), turn)
-        elif len(self.suggest_positions(log))>0:
+        elif len(self.suggest_positions(log)) > 0:
             position = choice(self.suggest_positions(log))
         else:
             x = randint(1, self.n)
@@ -122,8 +101,6 @@ if __name__ == "__main__":
     bbstone = [Stone(x[1]+1, x[0]+1, "b") for x in bb]
     wwstone = [Stone(x[1]+1, x[0]+1, "w") for x in ww]
     bbstone.extend(wwstone)
-
-
 
     config = BoardConfig(19, 19, 6, 2, 1)
     tei_bot = TeiBot(config)
