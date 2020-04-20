@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from bokeh.plotting import figure, output_file, save, show
 from typing import List
+
 import numpy as np
+from bokeh.plotting import figure, output_file, save, show
 
 
 @dataclass
