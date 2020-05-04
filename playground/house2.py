@@ -45,6 +45,7 @@ class House:
                 continue
 
             self.board.put_stone(stone)
+            print(f"{order} stone: {stone.x},{stone.y},{turn}")
 
             game_info = {}
             end_check = self.referee.end_check(self.board.log, self.board.config)
@@ -95,8 +96,8 @@ class House:
 
 
 if __name__ == "__main__":
-    for cnt in range(50000):
+    for cnt in range(1):
         coin_toss = True if random() > 0.5 else False
         house2 = House(first_player_first_move=coin_toss)
-        house2.simulate("jw", "alex", render_every=False, pause=0.5, save=True)
+        house2.simulate("tei_v2", "jw", render_every=False, pause=0.5, save=False)
         print(f"{cnt} game finished")

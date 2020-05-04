@@ -31,7 +31,7 @@ a = np.array(
 
 
 @dataclass
-class RowConnected:
+class Position1D:
     connected_size: int
     position: List[int]
 
@@ -46,7 +46,8 @@ def get_black(mat) -> np.array:
     return np.where(mat != 1, 0, mat)
 
 
-def find_connected_under_k(vec, k):
+def find_connected_under_k(vec: np.array, k: int) -> List[Position1D]:
+    first_element_of_connected_n=[]
     size = len(vec)
     cum_sum_vec = np.zeros(size, dtype="int32")
     for i in range(k, 0, -1):
@@ -56,35 +57,37 @@ def find_connected_under_k(vec, k):
     diff = np.diff(cum_sum_vec)
     diff = np.concatenate((cum_sum_vec[0:1], diff))
     diff = np.where(diff < 0, 0, diff)
-    return diff
+
+    for k in range(k, 0, -1):
+        n_connected_position = np.where(diff == k)[0]
+        if len(n_connected_position) >= 0:
+            connected = Position1D(connected_size=k, position=list(n_connected_position))
+            first_element_of_connected_n.append(connected)
+
+    return first_element_of_connected_n
 
 
-def find_connected_1d(vec):
+def find_connected_1d(vec: np.array) -> List[Position1D]:
     first_element_of_connected_n = []
     if np.sum(vec) == 0:
         return first_element_of_connected_n
     vec_copy = vec.copy()
-    zz4 = find_connected_under_k(vec_copy, 6)
-
-    for k in [6, 5, 4, 3, 2, 1]:
-        n_connected_position = np.where(zz4 == k)[0]
-        if len(n_connected_position) >= 0:
-            connected = RowConnected(connected_size=k, position=list(n_connected_position))
-            first_element_of_connected_n.append(connected)
+    first_element_of_connected_n = find_connected_under_k(vec_copy, 6)
     return first_element_of_connected_n
 
 
-def find_connected_edge(dic: List[RowConnected]) -> List[RowConnected]:
+def find_connected_edge(dic: List[Position1D]) -> List[Position1D]:
     connected_edge = []
     for x in dic:
         edges = sum([[y - 1, y + x.connected_size] for y in x.position], [])
         edges_filtered_distinct = list(set([v1 for v1 in edges if 0 <= v1 <= 18]))
-        edges_filtered_distinct = RowConnected(x.connected_size, edges_filtered_distinct)
+        edges_filtered_distinct = Position1D(x.connected_size, edges_filtered_distinct)
         connected_edge.append(edges_filtered_distinct)
     return connected_edge
 
 
-def diagonal_order(matrix, row, col):
+
+def diagonal_order(matrix: np.array, row: int, col: int):
     value = []
     coord = []
     for line in range(1, (row + col)):
@@ -101,14 +104,14 @@ def diagonal_order(matrix, row, col):
     return value_coord
 
 
-def find_connected_19x19(mat):
+def find_connected_19x19(mat: np.array):
     mat_copy = mat.copy()
     mat_copy_flip = np.fliplr(mat.copy())
     position = []
-    diagonal_0 = diagonal_order(mat_copy, 19, 19)
-    diagonal_1 = diagonal_order(mat_copy_flip, 19, 19)
+    positive_diagonal = diagonal_order(mat_copy, 19, 19)
+    negative_diagonal = diagonal_order(mat_copy_flip, 19, 19)
 
-    for vec, i in diagonal_0:
+    for vec, i in positive_diagonal:
         if len(vec) > 5:
             connected_diagonal_0 = find_connected_1d(vec)
             if len(connected_diagonal_0) > 0:
@@ -117,7 +120,7 @@ def find_connected_19x19(mat):
                                            for y in find_diagonal_0_edge]
                 position.extend(find_diagonal_0_edge_2d)
 
-    for vec, i in diagonal_1:
+    for vec, i in negative_diagonal:
         if len(vec) > 5:
             connected_diagonal_0 = find_connected_1d(vec)
             if len(connected_diagonal_0) > 0:
@@ -151,7 +154,7 @@ def find_connected_19x19(mat):
         max_connected_positions.append((max_cnt["count"], max_cnt["pos"]))
 
     connected_positions_max_by_size = {}
-    for i in [1, 2, 3, 4, 5, 6]:
+    for i in range(1,7):
         ll = list(filter(lambda x: x[0] == i, max_connected_positions))
         ll2 = list(map(lambda x: (int(x[1][0:2]), int(x[1][2:4])), ll))
         connected_positions_max_by_size[i] = ll2
