@@ -4,8 +4,7 @@ from itertools import groupby
 from random import choice
 from dataclasses import dataclass
 from scipy.ndimage import convolve
-
-from typing import List
+from typing import List, Tuple, Dict
 
 a = np.array(
     [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -47,7 +46,7 @@ def get_black(mat) -> np.array:
 
 
 def find_connected_under_k(vec: np.array, k: int) -> List[Position1D]:
-    first_element_of_connected_n=[]
+    first_element_of_connected_n = []
     size = len(vec)
     cum_sum_vec = np.zeros(size, dtype="int32")
     for i in range(k, 0, -1):
@@ -86,8 +85,7 @@ def find_connected_edge(dic: List[Position1D]) -> List[Position1D]:
     return connected_edge
 
 
-
-def diagonal_order(matrix: np.array, row: int, col: int):
+def diagonal_order(matrix: np.array, row: int, col: int) -> List[Tuple[np.array, List[List[int]]]]:
     value = []
     coord = []
     for line in range(1, (row + col)):
@@ -104,7 +102,7 @@ def diagonal_order(matrix: np.array, row: int, col: int):
     return value_coord
 
 
-def find_connected_19x19(mat: np.array):
+def find_connected_19x19(mat: np.array) -> Dict[int, List[Tuple[int, int]]]:
     mat_copy = mat.copy()
     mat_copy_flip = np.fliplr(mat.copy())
     position = []
@@ -154,7 +152,7 @@ def find_connected_19x19(mat: np.array):
         max_connected_positions.append((max_cnt["count"], max_cnt["pos"]))
 
     connected_positions_max_by_size = {}
-    for i in range(1,7):
+    for i in range(1, 7):
         ll = list(filter(lambda x: x[0] == i, max_connected_positions))
         ll2 = list(map(lambda x: (int(x[1][0:2]), int(x[1][2:4])), ll))
         connected_positions_max_by_size[i] = ll2
@@ -162,7 +160,7 @@ def find_connected_19x19(mat: np.array):
     return connected_positions_max_by_size
 
 
-def choose_connected_position(dic, n_connected):
+def choose_connected_position(dic, n_connected) -> np.array:
     put_array = np.zeros(19 * 19, dtype="int64").reshape((19, 19))
     xx1 = dic[n_connected]
     xx2 = (
@@ -173,7 +171,7 @@ def choose_connected_position(dic, n_connected):
     return put_array
 
 
-def neighbor_sum(mat):
+def neighbor_sum(mat) -> np.array:
     s = 2
     kernel = np.ones(s * s, dtype="int32").reshape((s, s))
     c = convolve(mat, kernel, mode='constant')
@@ -181,7 +179,7 @@ def neighbor_sum(mat):
     return c
 
 
-def suggest_position_by_connected_element(mat, turn):
+def suggest_position_by_connected_element(mat, turn) -> np.array:
     black = get_black(mat)
     white = get_white(mat)
     all_stone = black + white
@@ -194,7 +192,7 @@ def suggest_position_by_connected_element(mat, turn):
         enemy = find_connected_19x19(white)
 
     final_positions = np.zeros(19 * 19, dtype="int64").reshape((19, 19))
-    for i in [5, 4, 3, 2, 1]:
+    for i in range(5, 0, -1):
         if i > 1:
             if len(enemy[i]) > 0:
                 find_connected = choose_connected_position(enemy, i)
@@ -269,4 +267,3 @@ def suggest_position_by_connected_element(mat, turn):
         final_positions = zero_mat
         print("random")
     return final_positions
-
