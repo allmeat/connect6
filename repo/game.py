@@ -3,10 +3,11 @@ import json
 from typing import List
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session
 
 from board import Stone, BoardConfig
+
 
 Base = declarative_base()
 

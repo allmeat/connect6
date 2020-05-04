@@ -12,7 +12,7 @@ if not os.path.exists("templates"):
 
 class House:
 
-    def __init__(self, first_player_first_move: bool):
+    def __init__(self, first_player_first_move: bool, debug: bool = True):
         self.board = Board()
         self.referee = Referee()
         self.bot = Bot(self.board.config)
@@ -23,6 +23,8 @@ class House:
             "tei_v2" : self.bot.tei_bot_v2,
             "jw": self.bot.alex_bot
         }
+        self.winner = "no one"
+        self.debug = debug
 
     @staticmethod
     def player_input(color: str) -> Stone:
@@ -72,13 +74,15 @@ class House:
                 continue
 
             self.board.put_stone(stone)
-            print(f"{order} stone: {stone.x},{stone.y},{turn}")
+            if self.debug:
+                print(f"{order} stone: {stone.x},{stone.y},{turn}")
             end_check = self.referee.end_check(self.board.log, self.board.config)
             if end_check.is_end:
-                winner = "no one" if end_check.is_tie else order
-                print(f"{winner} wins")
-                self.board.print_winner(winner)
-                self.board.render_figure()
+                self.winner = "no one" if end_check.is_tie else order
+                print(f"{self.winner} wins")
+                self.board.print_winner(self.winner)
+                if self.debug:
+                    self.board.render_figure()
                 break
 
             if render_every:
