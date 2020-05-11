@@ -1,6 +1,7 @@
 from typing import List
 from random import randint
 from board import Stone, BoardConfig
+from tei_bot_v2 import TeiBot_v2
 from tei_bot import TeiBot
 from alex_bot import AlexBot
 from strategic_bot import StrategicBot
@@ -11,6 +12,7 @@ class Bot:
     def __init__(self, board_config: BoardConfig):
         self.config = board_config
         self.tei = TeiBot(self.config)
+        self.tei_v2 = TeiBot_v2(self.config)
         self.alex = AlexBot(self.config)
         self.strategic = StrategicBot(self.config)
 
@@ -21,6 +23,9 @@ class Bot:
 
     def tei_bot(self, log: List[Stone]) -> Stone:
         return self.tei.put_stone(log)
+
+    def tei_bot_v2(self, log: List[Stone]) -> Stone:
+        return self.tei_v2.put_stone(log)
 
     def alex_bot(self, log: List[Stone]) -> Stone:
         return self.alex.put_stone(log)
