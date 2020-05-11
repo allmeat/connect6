@@ -35,13 +35,13 @@ class Position1D:
     position: List[int]
 
 
-def get_white(mat) -> np.array:
+def get_white(mat: np.array) -> np.array:
     mat = np.where(mat != 2, 0, mat)
     mat = np.where(mat == 2, 1, mat)
     return mat
 
 
-def get_black(mat) -> np.array:
+def get_black(mat: np.array) -> np.array:
     return np.where(mat != 1, 0, mat)
 
 
@@ -160,7 +160,7 @@ def find_connected_19x19(mat: np.array) -> Dict[int, List[Tuple[int, int]]]:
     return connected_positions_max_by_size
 
 
-def choose_connected_position(dic, n_connected) -> np.array:
+def choose_connected_position(dic: Dict[int, List[Tuple[int, int]]], n_connected: int) -> np.array:
     put_array = np.zeros(19 * 19, dtype="int64").reshape((19, 19))
     xx1 = dic[n_connected]
     xx2 = (
@@ -171,7 +171,7 @@ def choose_connected_position(dic, n_connected) -> np.array:
     return put_array
 
 
-def neighbor_sum(mat) -> np.array:
+def neighbor_sum(mat: np.array) -> np.array:
     s = 2
     kernel = np.ones(s * s, dtype="int32").reshape((s, s))
     c = convolve(mat, kernel, mode='constant')
@@ -179,7 +179,7 @@ def neighbor_sum(mat) -> np.array:
     return c
 
 
-def suggest_position_by_connected_element(mat, turn) -> np.array:
+def suggest_position_by_connected_element(mat: np.array, turn: str) -> np.array:
     black = get_black(mat)
     white = get_white(mat)
     all_stone = black + white
