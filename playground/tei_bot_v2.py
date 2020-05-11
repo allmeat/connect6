@@ -7,7 +7,7 @@ from util import turn_check
 from tei_bot_v2_util import get_black, get_white, suggest_position_by_connected_element
 
 
-class TeiBot:
+class TeiBot_v2:
     def __init__(self, board_config: BoardConfig):
         self.k = board_config.connect
         self.m = board_config.row
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     bbstone.extend(wwstone)
 
     config = BoardConfig(19, 19, 6, 2, 1)
-    tei_bot = TeiBot(config)
+    tei_bot = TeiBot_v2(config)
     tei_bot.draw_board(bbstone)
 
     suggest_positions = tei_bot.suggest_positions(bbstone)

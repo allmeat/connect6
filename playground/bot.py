@@ -1,7 +1,7 @@
 from typing import List
 from random import randint
 from board import Stone, BoardConfig
-from tei_bot_v2 import TeiBot as TeiBot_v2
+from tei_bot_v2 import TeiBot_v2
 from tei_bot import TeiBot
 from alex_bot import AlexBot
 from strategic_bot import StrategicBot
